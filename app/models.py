@@ -24,9 +24,12 @@ class User(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     # Relationships
-    doctor = relationship("Doctor", back_populates="user")
-    patient = relationship("Patient", back_populates="user")
-    admin = relationship("Admin", back_populates="user")
+    doctor = relationship("Doctor", back_populates="user",
+                          cascade="all, delete", uselist=False)
+    patient = relationship("Patient", back_populates="user",
+                           cascade="all, delete", uselist=False)
+    admin = relationship("Admin", back_populates="user",
+                         cascade="all, delete", uselist=False)
 
 
 # Hospital Model
@@ -41,7 +44,7 @@ class Hospital(Base):
     website = Column(String)
     license_number = Column(String, nullable=False)
     phone_number = Column(String(15), nullable=True)
-    hospital_admin_id = Column(Integer, nullable=False)
+    hospital_admin_id = Column(String, nullable=False)
     registration_number = Column(String, nullable=False)
     ownership_type = Column(Enum(OwnershipType), nullable=False)
     owner_name = Column(String)

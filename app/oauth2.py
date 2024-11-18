@@ -26,8 +26,8 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def authenticate_user(db: Session, credential: str, password: str):
-    user = get_hospital_or_user(db, credential=credential)
+def authenticate_user(db: Session, email: str, password: str):
+    user = get_hospital_or_user(db, email=email)
     if not user or not verify_password(password, user.password):
         return False
     return user
@@ -58,7 +58,7 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    user = get_hospital_or_user(db, credential=username)
+    user = get_hospital_or_user(db, email=username)
     if user is None:
         raise credentials_exception
     return user

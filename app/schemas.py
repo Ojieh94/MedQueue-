@@ -67,8 +67,6 @@ class User(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
 # Base Model for Hospital
-
-
 class HospitalBase(BaseModel):
     name: str
     address: str
@@ -76,7 +74,7 @@ class HospitalBase(BaseModel):
     website: str
     license_number: str
     phone_number: str
-    hospital_admin_id: int
+    hospital_admin_id: str
     registration_number: str
     ownership_type: OwnershipType
     owner_name: str
@@ -158,8 +156,6 @@ class Appointment(AppointmentBase):
     model_config = ConfigDict(from_attributes=True)
 
 # Base Model for Medical Record
-
-
 class MedicalRecord(BaseModel):
     id: int
     patient_id: int
@@ -170,8 +166,6 @@ class MedicalRecord(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 # Base Model for Patient
-
-
 class PatientCreate(UserCreate):
     hospital_card_id: str | None
 
@@ -179,7 +173,28 @@ class PatientCreate(UserCreate):
 class Patient(BaseModel):
     id: int
     user_id: int
-    hospital_card_id: str
+    hospital_card_id: str | None
     medical_records: List[MedicalRecord]
 
     model_config = ConfigDict(from_attributes=True)
+
+# Response models
+class PatientResponse(BaseModel):
+    id: int
+    hospital_card_id: str | None
+    user: UserBase
+
+    model_config = ConfigDict(from_attributes=True)
+
+class DoctorResponse(BaseModel):
+    role_id: str | None
+    specialization: str
+    years_of_experience: int
+    is_available: bool = True
+    user: UserBase
+
+    model_config = ConfigDict(from_attributes=True)
+
+class AdminResponse(BaseModel):
+    admin_type: AdminType
+    user: UserBase

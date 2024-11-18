@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.post('/signup/hospital', status_code=201)
+@router.post('/signup/hospital', status_code=201, response_model=schemas.HospitalBase)
 def hospital_signup(payload: schemas.HospitalCreate, db: Session = Depends(get_db)):
     hospital = get_hospital_by_email(db, email=payload.email)
     if hospital:
@@ -32,7 +32,7 @@ def hospital_signup(payload: schemas.HospitalCreate, db: Session = Depends(get_d
     return create_hospital(db=db, payload=payload)
 
 
-@router.post("/signup/patient", response_model=schemas.Patient)
+@router.post("/signup/patient", status_code=201, response_model=schemas.PatientResponse)
 def patient_signup(payload: schemas.PatientCreate, db: Session = Depends(get_db)):
     # Check if the email already exists
     patient = get_user_by_email(db, email=payload.email)
@@ -54,7 +54,7 @@ def patient_signup(payload: schemas.PatientCreate, db: Session = Depends(get_db)
         first_name=payload.first_name,
         last_name=payload.last_name,
         email=payload.email,
-        hashed_password=hashed_password,
+        password=hashed_password,
         role=schemas.UserRole.PATIENT,
         phone_number=payload.phone_number,
         date_of_birth=payload.date_of_birth,
@@ -79,7 +79,7 @@ def patient_signup(payload: schemas.PatientCreate, db: Session = Depends(get_db)
     return patient
 
 
-@router.post("/signup/doctor", response_model=schemas.Doctor)
+@router.post("/signup/doctor", status_code=201, response_model=schemas.DoctorResponse)
 def doctor_signup(payload: schemas.DoctorCreate, db: Session = Depends(get_db)):
     # Check if the email already exists
     doctor = get_user_by_email(db, email=payload.email)
@@ -101,7 +101,7 @@ def doctor_signup(payload: schemas.DoctorCreate, db: Session = Depends(get_db)):
         first_name=payload.first_name,
         last_name=payload.last_name,
         email=payload.email,
-        hashed_password=hashed_password,
+        password=hashed_password,
         role=schemas.UserRole.DOCTOR,
         phone_number=payload.phone_number,
         date_of_birth=payload.date_of_birth,
@@ -130,7 +130,7 @@ def doctor_signup(payload: schemas.DoctorCreate, db: Session = Depends(get_db)):
     return doctor
 
 
-@router.post("/signup/admin", response_model=schemas.Admin)
+@router.post("/signup/admin", status_code=201, response_model=schemas.AdminResponse)
 def admin_signup(payload: schemas.AdminCreate, db: Session = Depends(get_db)):
     # Check if the email already exists
     admin = get_user_by_email(db, email=payload.email)
@@ -152,7 +152,7 @@ def admin_signup(payload: schemas.AdminCreate, db: Session = Depends(get_db)):
         first_name=payload.first_name,
         last_name=payload.last_name,
         email=payload.email,
-        hashed_password=hashed_password,
+        password=hashed_password,
         role=schemas.UserRole.ADMIN,
         phone_number=payload.phone_number,
         date_of_birth=payload.date_of_birth,
@@ -165,8 +165,8 @@ def admin_signup(payload: schemas.AdminCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
 
-    # Create patient record
-    doctor = models.Admin(
+    # Create admin record
+    admin = models.Admin(
         user_id=user.id,
         hospital_id=payload.hospital_id,
         hospital_admin_id=payload.hospital_admin_id,
