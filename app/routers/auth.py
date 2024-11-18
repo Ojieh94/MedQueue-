@@ -183,7 +183,7 @@ def admin_signup(payload: schemas.AdminCreate, db: Session = Depends(get_db)):
 @router.post("/login", status_code=200)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(
-        db, credential=form_data.username, password=form_data.password)
+        db, email=form_data.username, password=form_data.password)
     if not user:
         raise HTTPException(
             status_code=401,
