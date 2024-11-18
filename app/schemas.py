@@ -198,3 +198,5 @@ class DoctorResponse(BaseModel):
 class AdminResponse(BaseModel):
     admin_type: AdminType
     user: UserBase
+
+    model_config = ConfigDict(from_attributes=True)
