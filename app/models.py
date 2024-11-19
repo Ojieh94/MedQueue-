@@ -44,7 +44,6 @@ class Hospital(Base):
     website = Column(String)
     license_number = Column(String, nullable=False)
     phone_number = Column(String(15), nullable=True)
-    hospital_admin_id = Column(String, nullable=False)
     registration_number = Column(String, nullable=False)
     ownership_type = Column(Enum(OwnershipType), nullable=False)
     owner_name = Column(String)
@@ -152,3 +151,11 @@ class Department(Base):
 
     # Relationships
     hospital = relationship("Hospital", back_populates="departments")
+
+# Signup Link - Table to store generated tokens for admins/doctors signup links.
+class SignupLink(Base):
+    __tablename__ = "signup_links"
+    token = Column(String, primary_key=True, unique=True, index=True)
+    email = Column(String, nullable=False)
+    is_used = Column(Boolean, default=False)
+    created_at = Column(DateTime, server_default=func.now())
