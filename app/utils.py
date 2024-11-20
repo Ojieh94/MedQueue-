@@ -1,5 +1,7 @@
 import re
 from sqlalchemy.orm import Session
+from app.models import SignupLink
+from datetime import datetime, timedelta
 
 from app.crud.hospitals import get_hospital_by_email
 from app.crud.users import get_user_by_email
@@ -48,3 +50,14 @@ def get_hospital_or_user(db: Session, email: str):
     if not user:
         user = get_user_by_email(db, email)
     return user
+
+def validate_signup_token(token: str, db: Session) -> bool:
+    signup_link = db.query(SignupLink).filter(SignupLink.token == token).first()
+    if not signup_link:
+        return False
+    if signup_link.is_used:
+        return False
+    # Check if the token is expired (e.g., valid for 24 hours)
+    if signup_link.created_at < datetime.now() - timedelta(hours=24):
+        return False
+    return True

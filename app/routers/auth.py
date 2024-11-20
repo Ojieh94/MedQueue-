@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from datetime import datetime, timedelta
 from app.crud.users import get_user_by_email
 from app.oauth2 import authenticate_user, create_access_token, pwd_context
 from app.database import get_db
-from app import models, oauth2, schemas
+from app import models, schemas
 from app.crud.hospitals import get_hospital_by_email, create_hospital
 from app.utils import validate_hospital_password, validate_password
 
@@ -79,8 +80,30 @@ def patient_signup(payload: schemas.PatientCreate, db: Session = Depends(get_db)
     return patient
 
 
+##### DOCTOR SIGNUP SESSION #####
 @router.post("/signup/doctor", status_code=201, response_model=schemas.DoctorResponse)
-def doctor_signup(payload: schemas.DoctorCreate, db: Session = Depends(get_db)):
+def doctor_signup(payload: schemas.DoctorCreate, token: str, db: Session = Depends(get_db)):
+
+    # Validate the signup token
+    signup_link = db.query(models.SignupLink).filter(models.SignupLink.token == token).first()
+    if not signup_link:
+        raise HTTPException(status_code=400, detail="Invalid signup token")
+    
+    if signup_link.is_used:
+        raise HTTPException(status_code=400, detail="Signup token already used")
+
+    # Check if token is expired (optional)
+    if signup_link.created_at < datetime.now() - timedelta(hours=24):
+        raise HTTPException(status_code=400, detail="Signup token has expired")
+
+    # Check if the email associated with the token matches the payload
+    if signup_link.email != payload.email:
+        raise HTTPException(status_code=400, detail="Token email does not match")
+
+    # Mark the token as used
+    signup_link.is_used = True
+    db.commit()
+
     # Check if the email already exists
     doctor = get_user_by_email(db, email=payload.email)
     if doctor:
@@ -130,8 +153,30 @@ def doctor_signup(payload: schemas.DoctorCreate, db: Session = Depends(get_db)):
     return doctor
 
 
+### ADMIN SESSION
 @router.post("/signup/admin", status_code=201, response_model=schemas.AdminResponse)
-def admin_signup(payload: schemas.AdminCreate, db: Session = Depends(get_db)):
+def admin_signup(payload: schemas.AdminCreate, token: str, db: Session = Depends(get_db)):
+
+    # Validate the signup token
+    signup_link = db.query(models.SignupLink).filter(models.SignupLink.token == token).first()
+    if not signup_link:
+        raise HTTPException(status_code=400, detail="Invalid signup token")
+    
+    if signup_link.is_used:
+        raise HTTPException(status_code=400, detail="Signup token already used")
+
+    # Check if token is expired (optional)
+    if signup_link.created_at < datetime.now() - timedelta(hours=24):
+        raise HTTPException(status_code=400, detail="Signup token has expired")
+
+    # Check if the email associated with the token matches the payload
+    if signup_link.email != payload.email:
+        raise HTTPException(status_code=400, detail="Token email does not match")
+
+    # Mark the token as used
+    signup_link.is_used = True
+    db.commit()
+
     # Check if the email already exists
     admin = get_user_by_email(db, email=payload.email)
     if admin:
@@ -180,6 +225,7 @@ def admin_signup(payload: schemas.AdminCreate, db: Session = Depends(get_db)):
     return admin
 
 
+#### LOGIN ENDPOINT
 @router.post("/login", status_code=200)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(
