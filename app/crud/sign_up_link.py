@@ -1,7 +1,7 @@
 import secrets
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
-from models import SignupLink
+from app.models import SignupLink
 
 def create_signup_link(email: str, db: Session) -> str:
     token = secrets.token_urlsafe(32)
