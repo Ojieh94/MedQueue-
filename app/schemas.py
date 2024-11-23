@@ -1,7 +1,7 @@
 from enum import Enum
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 # Enum for User Roles
 
@@ -41,7 +41,7 @@ class OwnershipType(str, Enum):
 class UserBase(BaseModel):
     first_name: str
     last_name: str
-    email: str
+    email: EmailStr
     role: UserRole
     phone_number: str
     date_of_birth: datetime
@@ -55,8 +55,17 @@ class UserCreate(UserBase):
     password: str
 
 
-class UserUpdate(UserBase):
-    pass
+class UserUpdate(BaseModel):
+    first_name: Optional[str]
+    last_name: Optional[str]
+    email: Optional[EmailStr]
+    role: Optional[UserRole]
+    phone_number: Optional[str]
+    date_of_birth: Optional[datetime]
+    gender: Optional[str]
+    country: Optional[str]
+    state_of_residence: Optional[str]
+    home_address: Optional[str]
 
 
 class User(UserBase):
@@ -70,7 +79,8 @@ class User(UserBase):
 class HospitalBase(BaseModel):
     name: str
     address: str
-    email: str
+    state: str
+    email: EmailStr
     website: str
     license_number: str
     phone_number: str
@@ -169,6 +179,9 @@ class MedicalRecord(BaseModel):
 class PatientCreate(UserCreate):
     hospital_card_id: str | None
 
+class PatientUpdate(UserUpdate):
+    pass
+
 
 class Patient(BaseModel):
     id: int
@@ -200,3 +213,10 @@ class AdminResponse(BaseModel):
     user: UserBase
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class EmailValidationRequest(BaseModel):
+    email: EmailStr
+
+class EmailValidationResponse(BaseModel):
+    message: str

@@ -39,6 +39,7 @@ class Hospital(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     address = Column(String(255), nullable=False)
+    state = Column(String(20), nullabe=False)
     email = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     website = Column(String)
