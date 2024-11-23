@@ -1,0 +1,12 @@
+hospital. DONE
+
+patients: DONE
+"""
+create patients
+list all patient
+list patient by id and hospital_card_number
+update patient
+delete patient
+"""
+department
+appointments

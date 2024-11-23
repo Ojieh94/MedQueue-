@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 from app.utils import get_hospital_or_user
 from app.database import get_db
+from app import schemas
 
 load_dotenv()
 
@@ -62,3 +63,20 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
     if user is None:
         raise credentials_exception
     return user
+
+##### Email validation block
+def create_email_validation_token(email: schemas.EmailValidationRequest) -> str:
+    expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    payload = {"sub": email, "exp": expire}
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+def verify_email_validation_token(token: str) -> Optional[str]:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload.get("sub")
+    except JWTError:
+        raise HTTPException(
+        status_code=401,
+        detail="Token is invalid or has expired. Please log in again.",
+        headers={"WWW-Authenticate": "Bearer"}
+    )
