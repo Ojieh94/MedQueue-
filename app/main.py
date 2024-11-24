@@ -7,12 +7,15 @@ from app.routers import auth, hospitals, users, sign_up_link as link_gen, email_
 from app.crud import sign_up_link as link
 from fastapi.middleware.cors import CORSMiddleware
 
+
+origins = ["*"]
+
 app = FastAPI()
 
 # CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
