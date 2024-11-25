@@ -13,7 +13,7 @@ app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "https://queue-medix.vercel.app/signup"
+    "https://queue-medix.vercel.app"
 ]
 
 # Add CORS middleware
@@ -25,10 +25,6 @@ app.add_middleware(
     allow_headers=["*"], 
 )
 
-
-@app.get("/")
-async def read_root():
-    return {"message": "Hello, world!"}
 
 
 Base.metadata.create_all(bind=engine)
