@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from apscheduler.schedulers.background import BackgroundScheduler
 from contextlib import asynccontextmanager
 from app.database import engine, Base, SessionLocal
-from app.routers import auth, hospitals, users, sign_up_link as link_gen, email_validation, department, appointment
-from app.crud import doctors, sign_up_link as link
+from app.routers import auth, hospitals, users, doctors, sign_up_link as link_gen, email_validation, department, appointment
+from app.crud import sign_up_link as link
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -58,7 +58,7 @@ app.include_router(link_gen.router)
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(hospitals.router)
-app.include_router(users.router)
+app.include_router(doctors.router)
 
 
 @app.get('/')
