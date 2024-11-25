@@ -9,14 +9,27 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# CORS Middleware
+
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+    "https://your-frontend-domain.com"
+]
+
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=origins, 
+    allow_credentials=True, 
+    allow_methods=["*"],  
+    allow_headers=["*"], 
 )
+
+
+@app.get("/")
+async def read_root():
+    return {"message": "Hello, world!"}
+
 
 Base.metadata.create_all(bind=engine)
 

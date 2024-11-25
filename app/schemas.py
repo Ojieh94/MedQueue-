@@ -208,6 +208,7 @@ class DoctorResponse(BaseModel):
     years_of_experience: int
     is_available: bool = True
     user: UserBase
+    hospital: HospitalBase
 
     model_config = ConfigDict(from_attributes=True)
 

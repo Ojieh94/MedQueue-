@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.oauth2 import get_current_user
 from sqlalchemy.orm import Session
 from app import schemas, models
-from app.crud import patients as pat_crud, appointment as apt_crud, hospitals as hp_crud, doctor as doc_crud
+from app.crud import patients as pat_crud, appointment as apt_crud, hospitals as hp_crud, doctors as doc_crud
 from app.database import get_db
 
 """
@@ -39,7 +39,7 @@ def create_appointment(patient_id: int, apt_payload: schemas.AppointmentCreate, 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Hospital not found")
     
     #check if the doctor exists
-    doctor = doc_crud.get_doctor_by_id(apt_payload.doctor_id, db)
+    doctor = doc_crud.get_doctor(apt_payload.doctor_id, db)
     if not doctor:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Doctor not found")
     
@@ -147,7 +147,7 @@ def cancel_appointment(appointment_id: int, db: Session = Depends(get_db), curre
     apt_crud.cancel_appointment(appointment_id, db)
     db.commit()
 
-    doctor = doc_crud.get_doctor_by_id(appointment.doctor_id, db)
+    doctor = doc_crud.get_doctor(appointment.doctor_id, db)
     doctor.is_available = True
     db.commit(doctor)
     db.refresh(doctor)

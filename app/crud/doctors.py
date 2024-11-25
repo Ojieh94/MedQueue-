@@ -24,8 +24,8 @@ def get_doctor(db: Session, doctor_id: int) -> models.Doctor:
 def get_doctor_by_email(db: Session, email: str) -> models.Doctor:
     return db.query(models.Doctor).join(models.User, models.Doctor.user_id == models.User.id).filter(models.User.email == email).first()
 
-def get_available_doctors(db: Session, offset: int = 0, limit: int = 10) -> List[models.Doctor]:
-    return db.query(models.Doctor).filter(models.Doctor.is_available == True).offset(offset).limit(limit).all()
+def get_available_doctors(db: Session, hospital_id: int, offset: int = 0, limit: int = 10) -> List[models.Doctor]:
+    return db.query(models.Doctor).filter(models.Doctor.hospital_id == hospital_id, models.Doctor.is_available == True).offset(offset).limit(limit).all()
 
 def change_doctor_availability_status(db: Session, doctor_id: int) -> models.Doctor:
     doctor = get_doctor(db=db, doctor_id=doctor_id)
@@ -46,3 +46,18 @@ def get_doctors_by_specialization(db: Session, specialization:str, offset: int =
 
     return query.offset(offset).limit(limit).all()
 
+def get_doctor_by_user_id(db: Session, user_id: int) -> models.Doctor:
+    return db.query(models.Doctor).join(models.User).filter(models.Doctor.user_id == user_id)
+
+def update_doctor(db: Session, doctor_id: int, doctor_payload: schemas.DoctorCreate) -> models.Doctor:
+    doctor = get_doctor(db=db, doctor_id=doctor_id)
+    if not doctor:
+        return None
+    
+    doctor_update = doctor_payload.model_dump(exclude_unset=True)
+    for k, v in doctor_update.items():
+        setattr(k, v, doctor)
+
+    db.commit()
+    db.refresh(doctor)
+    return doctor
