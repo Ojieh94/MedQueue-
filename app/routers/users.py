@@ -71,3 +71,26 @@ def get_user_by_email(email: str, db: Session = Depends(get_db), current_user: s
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Accessible to only super admins")
     return user
+
+@router.delete("/users/{user_id}", status_code=200)
+def delete_user(user_id: int, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
+    user = user_crud.get_user(user_id=user_id, db=db)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    
+    # Check if current user is an admin
+    admin_user = admin_crud.get_admin_by_user_id(
+        db=db, user_id=current_user.id)
+    if not admin_user:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized")
+
+    # Check if current user is super admin(endpoint is only accessible to super admins)
+    if admin_user.admin_type != schemas.AdminType.SUPER_ADMIN:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Accessible to only super admins")
+    
+    user_crud.delete_user(db=db, user_id=user_id)
+
+    return {"Message": "User successfully deleted"}
+
