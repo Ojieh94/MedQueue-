@@ -22,7 +22,7 @@ class AdminType(str, Enum):
 
 # Enum for Appointment Status
 class AppointmentStatus(str, Enum):
-    SCHEDULED = "scheduled"
+    PENDING = "pending"
     COMPLETED = "completed"
     CANCELED = "canceled"
     IN_PROGRESS = "in_progress"
@@ -131,7 +131,7 @@ class DoctorCreate(UserCreate):
 class Admin(BaseModel):
     id: int
     user_id: int
-    hospital_id: int
+    hospital_id: Optional[int]
     hospital_admin_id: str
     admin_type: AdminType
 
@@ -139,31 +139,9 @@ class Admin(BaseModel):
 
 
 class AdminCreate(UserCreate):
-    hospital_id: int
+    hospital_id: Optional[int] # not all admins need hospital id
     hospital_admin_id: str
     admin_type: AdminType
-
-
-# Base Model for Appointment
-class AppointmentBase(BaseModel):
-    hospital_id: int
-    appointment_note: str
-    scheduled_time: datetime
-    doctor_id: int
-
-
-class AppointmentCreate(AppointmentBase):
-    pass
-
-
-class Appointment(AppointmentBase):
-    id: int
-    patient: User
-    hospital: Hospital
-    status: AppointmentStatus = AppointmentStatus.SCHEDULED
-    doctor_id: Doctor
-
-    model_config = ConfigDict(from_attributes=True)
 
 # Base Model for Medical Record
 class MedicalRecord(BaseModel):
@@ -196,6 +174,31 @@ class PatientResponse(BaseModel):
     id: int
     hospital_card_id: str | None
     user: UserBase
+    medical_records: List[MedicalRecord]
+
+    model_config = ConfigDict(from_attributes=True)
+
+# Base Model for Appointment
+class AppointmentBase(BaseModel):
+    appointment_note: str
+    patient_id: int
+    doctor_id: int
+    hospital_id: int
+    scheduled_time: datetime
+
+
+class AppointmentCreate(AppointmentBase):
+    pass
+
+class AppointmentStatusUpdate(BaseModel):
+    status: AppointmentStatus
+
+class Appointment(AppointmentBase):
+    id: int
+    patient: PatientResponse
+    hospital: Hospital
+    status: AppointmentStatus = AppointmentStatus.PENDING
+    doctor: Doctor
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -220,3 +223,17 @@ class EmailValidationRequest(BaseModel):
 
 class EmailValidationResponse(BaseModel):
     message: str
+
+
+class DepartmentCreate(BaseModel):
+    name: str
+    hospital_id: int
+
+class DepartmentUpdate(DepartmentCreate):
+    hospital_id: Optional[int]
+
+class Department(DepartmentCreate):
+    id: int
+    hospital: Hospital
+
+    model_config = ConfigDict(from_attributes=True)

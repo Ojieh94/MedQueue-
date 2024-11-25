@@ -99,7 +99,7 @@ class Admin(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
-    hospital_id = Column(Integer, ForeignKey("hospitals.id"), nullable=False)
+    hospital_id = Column(Integer, ForeignKey("hospitals.id"), nullable=True)
     hospital_admin_id = Column(String, nullable=False)
     admin_type = Column(Enum(AdminType), nullable=False)
 
@@ -119,7 +119,7 @@ class Appointment(Base):
     appointment_note = Column(Text, nullable=False)
     scheduled_time = Column(DateTime, nullable=False)
     status = Column(Enum(AppointmentStatus),
-                    default=AppointmentStatus.SCHEDULED, nullable=False)
+                    default=AppointmentStatus.PENDING, nullable=False)
     doctor_id = Column(Integer, ForeignKey("doctors.id"), nullable=True)
 
     # Relationships
