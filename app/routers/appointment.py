@@ -58,7 +58,7 @@ def create_appointment(patient_id: int, apt_payload: schemas.AppointmentCreate, 
     
     return new_appointment
 
-@router.get('/appointments', status_code=status.HTTP_200_OK, response_model=List[schemas.Appointments])
+@router.get('/appointments', status_code=status.HTTP_200_OK, response_model=List[schemas.Appointment])
 def get_appointments(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
 
     users = {schemas.UserRole.ADMIN, schemas.UserRole.DOCTOR}
