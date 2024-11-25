@@ -13,7 +13,7 @@ app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "https://your-frontend-domain.com"
+    "https://queue-medix.vercel.app/signup"
 ]
 
 # Add CORS middleware
