@@ -5,10 +5,11 @@ from contextlib import asynccontextmanager
 from app.database import engine, Base, SessionLocal
 from app.routers import auth, hospitals, users, doctors, sign_up_link as link_gen, email_validation, department, appointment
 from app.crud import sign_up_link as link
-from starlette.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
+
+origins = ["*"]
 
 app = FastAPI()
-
 
 # origins = [
 #     "http://localhost",
@@ -19,10 +20,12 @@ app = FastAPI()
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
+    # allow_origins=["*"],
     allow_credentials=True, 
     allow_methods=["*"],  
-    allow_headers=["*", "Authorization"], 
+    allow_headers=["*"]
+    # allow_headers=["*", "Authorization"], 
 )
 
 
@@ -68,6 +71,8 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(hospitals.router)
 app.include_router(doctors.router)
+app.include_router(department.router)
+app.include_router(appointment.router)
 
 
 @app.get('/')
