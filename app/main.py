@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from app.database import engine, Base, SessionLocal
 from app.routers import auth, hospitals, users, doctors, sign_up_link as link_gen, email_validation, department, appointment
 from app.crud import sign_up_link as link
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
