@@ -3,8 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.oauth2 import get_current_user
 from sqlalchemy.orm import Session
 from app import schemas
-from app.crud import doctors as doctor_crud
-from app.crud.admins import get_admin_by_user_id
+from app.crud import doctors as doctor_crud, admins as admin_crud
 from app.database import get_db
 
 router = APIRouter(
@@ -37,7 +36,7 @@ def get_doctor_by_id(doctor_id: int, db: Session = Depends(get_db), current_user
                             detail="Not authorized to perform this action")
 
     # Retrieve admin data
-    current_admin = get_admin_by_user_id(db=db, user_id=current_user.id)
+    current_admin = admin_crud.get_admin_by_user_id(db=db, user_id=current_user.id)
     if current_admin is None:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Admin privileges required")
@@ -77,3 +76,38 @@ def update_doctor(doctor_id: int, doctor_payload: schemas.DoctorCreate, db: Sess
     doctor = doctor_crud.update_doctor(db=db, doctor_id=doctor_id, doctor_payload=doctor_payload)
 
     return doctor
+
+
+@router.delete('/doctors/{doctor_id}', status_code=200)
+def delete_doctor(doctor_id: int, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
+    doctor = doctor_crud.get_doctor(db=db, doctor_id=doctor_id)
+    if not doctor:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Doctor not found")
+
+    # Authorization checks
+    if current_user.role == schemas.UserRole.PATIENT:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Patients are not allowed to delete doctors.")
+
+    if current_user.role == schemas.UserRole.DOCTOR:
+        current_doctor = doctor_crud.get_doctor_by_user_id(
+            db=db, user_id=current_user.id)
+        if current_doctor.id != doctor_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="Doctors can only delete their own records.")
+
+    if current_user.role == schemas.UserRole.ADMIN:
+        current_admin = admin_crud.get_admin_by_user_id(
+            db=db, user_id=current_user.id)
+        if current_admin.admin_type != schemas.AdminType.SUPER_ADMIN:
+            if current_admin.hospital_id != doctor.hospital_id:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="You are not authorized to delete this doctor."
+                )
+
+    # Delete the doctor
+    doctor_crud.delete_doctor(db=db, doctor_id=doctor_id)
+
+    return {"message": "Doctor deleted successfully"}

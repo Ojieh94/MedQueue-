@@ -19,18 +19,6 @@ def get_users(db: Session, offset: int = 0, limit: int = 10, search: Optional[st
 
     return query.offset(offset).limit(limit).all()
 
-
-def get_hospitals(db: Session, offset: int = 0, limit: int = 10, search: Optional[str] = "") -> List[models.Hospital]:
-    query = db.query(models.Hospital)
-
-    if search:
-        query = query.filter(
-            or_(models.Hospital.name.contains(search),
-                models.Hospital.state.contains(search))
-        )
-
-    return query.offset(offset).limit(limit).all()
-
 def get_user(db: Session, user_id: int) -> models.User:
     return db.query(models.UserRole).filter(models.User.id == user_id).first()
 

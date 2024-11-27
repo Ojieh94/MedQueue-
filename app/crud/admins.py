@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app import models
+from app import models, schemas
 
 
 def get_admin(db: Session, admin_id: int):
@@ -16,3 +16,26 @@ def get_admin_by_email(db: Session, email: str):
 
 def get_admin_by_user_id(db: Session, user_id: int):
     return db.query(models.Admin).filter(models.Admin.user_id == user_id).first()
+
+
+def update_admin(db: Session, admin_id: int, admin_payload: schemas.AdminCreate) -> models.Admin:
+    admin = get_admin(db=db, admin_id=admin_id)
+    if not admin:
+        return None
+
+    admin_update = admin_payload.model_dump(exclude_unset=True)
+    for k, v in admin_update.items():
+        setattr(k, v, admin)
+
+    db.commit()
+    db.refresh(admin)
+    return admin
+
+
+def delete_admin(db: Session, admin_id: int):
+    admin = get_admin(db, admin_id)
+    if not admin:
+        return False
+
+    db.delete(admin)
+    db.commit()

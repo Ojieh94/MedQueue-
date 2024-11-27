@@ -9,6 +9,11 @@ list patient by id and hospital_card_number
 update patient
 delete patient
 """
+
+
+def get_patient_by_user_id(db: Session, user_id: int) -> models.Doctor:
+    return db.query(models.Patient).join(models.User).filter(models.Patient.user_id == user_id)
+
 def get_patient_by_email(db: Session, email: str):
     return db.query(models.Patient).join(models.User, models.Patient.user_id == models.User.id).filter(models.User.email == email).first()
 

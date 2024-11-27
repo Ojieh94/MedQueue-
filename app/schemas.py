@@ -76,6 +76,8 @@ class User(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
 # Base Model for Hospital
+
+
 class HospitalBase(BaseModel):
     name: str
     address: str
@@ -139,23 +141,35 @@ class Admin(BaseModel):
 
 
 class AdminCreate(UserCreate):
-    hospital_id: Optional[int] # not all admins need hospital id
+    hospital_id: Optional[int]  # not all admins need hospital id
     hospital_admin_id: str
     admin_type: AdminType
 
 # Base Model for Medical Record
-class MedicalRecord(BaseModel):
-    id: int
+
+class MedicalRecordBase(BaseModel):
     patient_id: int
     description: str
     record_date: datetime
     doctor_id: int
 
+class MedicalRecordCreate(MedicalRecordBase):
+    pass
+
+class MedicalRecordUpdate(MedicalRecordBase):
+    pass
+
+class MedicalRecord(MedicalRecordBase):
+    id: int
+    
     model_config = ConfigDict(from_attributes=True)
 
 # Base Model for Patient
+
+
 class PatientCreate(UserCreate):
     hospital_card_id: str | None
+
 
 class PatientUpdate(UserUpdate):
     pass
@@ -170,6 +184,8 @@ class Patient(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 # Response models
+
+
 class PatientResponse(BaseModel):
     id: int
     hospital_card_id: str | None
@@ -179,6 +195,8 @@ class PatientResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 # Base Model for Appointment
+
+
 class AppointmentBase(BaseModel):
     appointment_note: str
     patient_id: int
@@ -190,8 +208,10 @@ class AppointmentBase(BaseModel):
 class AppointmentCreate(AppointmentBase):
     pass
 
+
 class AppointmentStatusUpdate(BaseModel):
     status: AppointmentStatus
+
 
 class Appointment(AppointmentBase):
     id: int
@@ -201,6 +221,7 @@ class Appointment(AppointmentBase):
     doctor: Doctor
 
     model_config = ConfigDict(from_attributes=True)
+
 
 class DoctorResponse(BaseModel):
     role_id: str | None
@@ -212,6 +233,7 @@ class DoctorResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class AdminResponse(BaseModel):
     admin_type: AdminType
     user: UserBase
@@ -222,6 +244,7 @@ class AdminResponse(BaseModel):
 class EmailValidationRequest(BaseModel):
     email: EmailStr
 
+
 class EmailValidationResponse(BaseModel):
     message: str
 
@@ -230,8 +253,10 @@ class DepartmentCreate(BaseModel):
     name: str
     hospital_id: int
 
+
 class DepartmentUpdate(DepartmentCreate):
     hospital_id: Optional[int]
+
 
 class Department(DepartmentCreate):
     id: int

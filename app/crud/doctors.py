@@ -61,3 +61,12 @@ def update_doctor(db: Session, doctor_id: int, doctor_payload: schemas.DoctorCre
     db.commit()
     db.refresh(doctor)
     return doctor
+
+
+def delete_doctor(db: Session, doctor_id: int):
+    doctor = get_doctor(db, doctor_id)
+    if not doctor:
+        return False
+
+    db.delete(doctor)
+    db.commit()
