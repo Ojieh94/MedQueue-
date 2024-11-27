@@ -7,21 +7,20 @@ from app.routers import admins, auth, hospitals, medical_records, users, doctors
 from app.crud import sign_up_link as link
 from fastapi.middleware.cors import CORSMiddleware
 
-origins = ["*"]
 
 app = FastAPI()
 
-# origins = [
-#     "http://localhost",
-#     "http://localhost:3000",
-#     "https://queue-medix.vercel.app"
-# ]
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+    "http://localhost:3001"
+]
 
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     # allow_origins=origins,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True, 
     allow_methods=["*"],  
     allow_headers=["*"]
