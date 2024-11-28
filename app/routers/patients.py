@@ -70,7 +70,7 @@ def fetch_patient(patient_card_id: str, db: Session = Depends(get_db), current_u
     return patient
 
 @router.put('/patients/{patient_id}', status_code=status.HTTP_202_ACCEPTED, response_model=schemas.PatientResponse)
-def update_patient(patient_id: int, patient_payload: schemas.HospitalUpdate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user), admin_user: models.Admin = Depends(get_current_user)):
+def update_patient(patient_id: int, patient_payload: schemas.PatientUpdate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user), admin_user: models.Admin = Depends(get_current_user)):
 
     patient = patient_crud.get_patient_by_id(patient_id, db)
     

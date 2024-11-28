@@ -39,7 +39,7 @@ def get_admin_by_id(admin_id: int, db: Session = Depends(get_db), current_user: 
     
 
 @router.put('/admins/{admin_id}', status_code=200, response_model=schemas.AdminResponse)
-def update_admin(admin_id: int, admin_payload: schemas.AdminCreate, db: Session = Depends(get_db), current_user: schemas.Admin = Depends(get_current_user)):
+def update_admin(admin_id: int, admin_payload: schemas.AdminUpdate, db: Session = Depends(get_db), current_user: schemas.Admin = Depends(get_current_user)):
     admin = admin_crud.get_admin(db=db, admin_id=admin_id)
     if not admin:
         raise HTTPException(
