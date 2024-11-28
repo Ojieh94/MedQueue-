@@ -86,7 +86,6 @@ class HospitalBase(BaseModel):
     website: str
     license_number: str
     phone_number: str
-    hospital_admin_id: str
     registration_number: str
     ownership_type: OwnershipType
     owner_name: str
