@@ -3,17 +3,15 @@ from pydantic import BaseModel, ConfigDict, EmailStr
 from datetime import datetime
 from typing import List, Optional
 
+
 # Enum for User Roles
-
-
 class UserRole(str, Enum):
     ADMIN = "admin"
     DOCTOR = "doctor"
     PATIENT = "patient"
 
+
 # Enum for Admin Roles
-
-
 class AdminType(str, Enum):
     SUPER_ADMIN = "super_admin"
     HOSPITAL_ADMIN = "hospital_admin"
@@ -27,28 +25,21 @@ class AppointmentStatus(str, Enum):
     CANCELED = "canceled"
     IN_PROGRESS = "in_progress"
 
+
 # Enum for Hospital Ownership type
-
-
 class OwnershipType(str, Enum):
     PRIVATE = "private"
     GOVERNMENT = "government"
     NGO = "ngo"
 
+
 # Base Model for User
-
-
 class UserBase(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
     role: UserRole
-    phone_number: str
-    date_of_birth: datetime
-    gender: str
-    country: str
-    state_of_residence: str
-    home_address: str
+    
 
 
 class UserCreate(UserBase):
@@ -59,13 +50,6 @@ class UserUpdate(BaseModel):
     first_name: Optional[str]
     last_name: Optional[str]
     email: Optional[EmailStr]
-    role: Optional[UserRole]
-    phone_number: Optional[str]
-    date_of_birth: Optional[datetime]
-    gender: Optional[str]
-    country: Optional[str]
-    state_of_residence: Optional[str]
-    home_address: Optional[str]
 
 
 class User(UserBase):
@@ -75,9 +59,9 @@ class User(UserBase):
 
     model_config = ConfigDict(from_attributes=True)
 
+
+
 # Base Model for Hospital
-
-
 class HospitalBase(BaseModel):
     name: str
     address: str
@@ -96,8 +80,18 @@ class HospitalCreate(HospitalBase):
     password: str
 
 
-class HospitalUpdate(HospitalBase):
-    pass
+class HospitalUpdate(BaseModel):
+    name: Optional[str]
+    address: Optional[str]
+    state: Optional[str]
+    email: Optional[EmailStr]
+    website: Optional[str]
+    license_number: Optional[str]
+    phone_number: Optional[str]
+    registration_number: Optional[str]
+    ownership_type: Optional[OwnershipType]
+    owner_name: Optional[str]
+    accredited: bool = False
 
 
 class Hospital(HospitalBase):
@@ -105,47 +99,74 @@ class Hospital(HospitalBase):
 
     model_config = ConfigDict(from_attributes=True)
 
+
+
 # Base Model for Doctor
-
-
-class Doctor(BaseModel):
-    id: int
-    user_id: int
+class DoctorBase(BaseModel):
     hospital_id: int
     role_id: str | None
     specialization: str
+    phone_number: str
+    date_of_birth: datetime
+    gender: str
+    country: str
+    state_of_residence: str
+    home_address: str
     years_of_experience: int
     is_available: bool = True
+
+    
+class DoctorUpdate(UserUpdate):
+    hospital_id: Optional[int]
+    role_id: Optional[str]
+    specialization: Optional[str]
+    phone_number: Optional[str]
+    date_of_birth: Optional[datetime]
+    gender: Optional[str]
+    country: Optional[str]
+    state_of_residence: Optional[str]
+    home_address: Optional[str]
+    years_of_experience: Optional[int]
+
+class Doctor(DoctorBase):
+    id: int
+    user_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class DoctorCreate(UserCreate):
-    hospital_id: int
-    role_id: str | None
-    specialization: str
-    years_of_experience: int
-
 # Base Model for Admin
-
-
-class Admin(BaseModel):
-    id: int
-    user_id: int
+class AdminBase(BaseModel):
+    phone_number: str
+    date_of_birth: datetime
+    gender: str
+    country: str
+    state_of_residence: str
+    home_address: str
     hospital_id: Optional[int]
     hospital_admin_id: str
     admin_type: AdminType
 
+class Admin(AdminBase):
+    id: int
+    user_id: int
+    
     model_config = ConfigDict(from_attributes=True)
 
 
-class AdminCreate(UserCreate):
-    hospital_id: Optional[int]  # not all admins need hospital id
-    hospital_admin_id: str
-    admin_type: AdminType
+class AdminUpdate(UserUpdate):
+    phone_number:Optional[str]
+    date_of_birth: Optional[datetime]
+    gender: Optional[str]
+    country: Optional[str]
+    state_of_residence: Optional[str]
+    home_address: Optional[str]
+    hospital_id: Optional[int]
+    admin_type: Optional[AdminType]
+
+
 
 # Base Model for Medical Record
-
 class MedicalRecordBase(BaseModel):
     patient_id: int
     description: str
@@ -155,47 +176,58 @@ class MedicalRecordBase(BaseModel):
 class MedicalRecordCreate(MedicalRecordBase):
     pass
 
-class MedicalRecordUpdate(MedicalRecordBase):
-    pass
+class MedicalRecordUpdate(BaseModel):
+    patient_id: Optional[int]
+    description: Optional[str]
+    record_date: Optional[datetime]
+    doctor_id: Optional[int]
 
 class MedicalRecord(MedicalRecordBase):
     id: int
     
     model_config = ConfigDict(from_attributes=True)
 
+
 # Base Model for Patient
-
-
-class PatientCreate(UserCreate):
+class PatientBase(BaseModel):
+    phone_number: str
+    date_of_birth: datetime
+    gender: str
+    country: str
+    state_of_residence: str
+    home_address: str
     hospital_card_id: str | None
 
 
-class PatientUpdate(UserUpdate):
+class PatientCreate(PatientBase):
     pass
 
+class PatientUpdate(UserUpdate):
+    phone_number: Optional[str]
+    date_of_birth: Optional[datetime]
+    gender: Optional[str]
+    country: Optional[str]
+    state_of_residence: Optional[str]
+    home_address: Optional[str]
+    hospital_card_id: Optional[str]
 
-class Patient(BaseModel):
+class Patient(PatientBase):
     id: int
     user_id: int
-    hospital_card_id: str | None
     medical_records: List[MedicalRecord]
 
     model_config = ConfigDict(from_attributes=True)
 
-# Response models
-
-
-class PatientResponse(BaseModel):
+# Patient Response models
+class PatientResponse(PatientBase):
     id: int
-    hospital_card_id: str | None
     user: UserBase
     medical_records: List[MedicalRecord]
 
     model_config = ConfigDict(from_attributes=True)
 
+
 # Base Model for Appointment
-
-
 class AppointmentBase(BaseModel):
     appointment_note: str
     patient_id: int
@@ -222,6 +254,8 @@ class Appointment(AppointmentBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+
+# Response Models
 class DoctorResponse(BaseModel):
     role_id: str | None
     specialization: str

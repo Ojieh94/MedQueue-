@@ -18,7 +18,7 @@ def get_admin_by_user_id(db: Session, user_id: int):
     return db.query(models.Admin).filter(models.Admin.user_id == user_id).first()
 
 
-def update_admin(db: Session, admin_id: int, admin_payload: schemas.AdminCreate) -> models.Admin:
+def update_admin(db: Session, admin_id: int, admin_payload: schemas.AdminUpdate) -> models.Admin:
     admin = get_admin(db=db, admin_id=admin_id)
     if not admin:
         return None

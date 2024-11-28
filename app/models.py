@@ -14,12 +14,6 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     role = Column(Enum(UserRole), nullable=False)
-    phone_number = Column(String(15), nullable=False)
-    date_of_birth = Column(DateTime, nullable=False)
-    gender = Column(String, nullable=False)
-    country = Column(String, nullable=False)
-    state_of_residence = Column(String, nullable=False)
-    home_address = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
 
@@ -64,6 +58,12 @@ class Doctor(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
+    phone_number = Column(String(15), nullable=False)
+    date_of_birth = Column(DateTime, nullable=False)
+    gender = Column(String, nullable=False)
+    country = Column(String, nullable=False)
+    state_of_residence = Column(String, nullable=False)
+    home_address = Column(String(255), nullable=False)
     hospital_id = Column(Integer, ForeignKey("hospitals.id"), nullable=False)
     role_id = Column(String(20), nullable=True)
     specialization = Column(String, nullable=False)
@@ -85,6 +85,12 @@ class Patient(Base):
     user_id = Column(Integer, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
     hospital_card_id = Column(String(20), nullable=True)
+    phone_number = Column(String(15), nullable=False)
+    date_of_birth = Column(DateTime, nullable=False)
+    gender = Column(String, nullable=False)
+    country = Column(String, nullable=False)
+    state_of_residence = Column(String, nullable=False)
+    home_address = Column(String(255), nullable=False)
 
     # Relationships
     medical_records = relationship("MedicalRecord", back_populates="patient")
@@ -102,6 +108,12 @@ class Admin(Base):
     hospital_id = Column(Integer, ForeignKey("hospitals.id"), nullable=True)
     hospital_admin_id = Column(String, nullable=False)
     admin_type = Column(Enum(AdminType), nullable=False)
+    phone_number = Column(String(15), nullable=False)
+    date_of_birth = Column(DateTime, nullable=False)
+    gender = Column(String, nullable=False)
+    country = Column(String, nullable=False)
+    state_of_residence = Column(String, nullable=False)
+    home_address = Column(String(255), nullable=False)
 
     # Relationships
     user = relationship("User", back_populates="admin")

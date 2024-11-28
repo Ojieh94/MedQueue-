@@ -49,7 +49,7 @@ def get_doctors_by_specialization(db: Session, specialization:str, offset: int =
 def get_doctor_by_user_id(db: Session, user_id: int) -> models.Doctor:
     return db.query(models.Doctor).join(models.User).filter(models.Doctor.user_id == user_id)
 
-def update_doctor(db: Session, doctor_id: int, doctor_payload: schemas.DoctorCreate) -> models.Doctor:
+def update_doctor(db: Session, doctor_id: int, doctor_payload: schemas.DoctorUpdate) -> models.Doctor:
     doctor = get_doctor(db=db, doctor_id=doctor_id)
     if not doctor:
         return None

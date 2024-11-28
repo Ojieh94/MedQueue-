@@ -43,8 +43,6 @@ def validate_hospital_password(password: str, name: str, owner_name: str) -> str
     return "Password is valid"
 
 # To get current user for authentication
-
-
 def get_hospital_or_user(db: Session, email: str):
     user = get_hospital_by_email(db, email)
     if not user:

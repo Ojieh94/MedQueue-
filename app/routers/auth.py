@@ -33,8 +33,8 @@ def hospital_signup(payload: schemas.HospitalCreate, db: Session = Depends(get_d
     return create_hospital(db=db, payload=payload)
 
 
-@router.post("/signup/patient", status_code=201, response_model=schemas.PatientResponse)
-def patient_signup(payload: schemas.PatientCreate, db: Session = Depends(get_db)):
+@router.post("/signup/patient", status_code=201, response_model=schemas.User)
+def patient_signup(payload: schemas.UserCreate, db: Session = Depends(get_db)):
     # Check if the email already exists
     patient = get_user_by_email(db, email=payload.email)
     if patient:
@@ -57,12 +57,6 @@ def patient_signup(payload: schemas.PatientCreate, db: Session = Depends(get_db)
         email=payload.email,
         password=hashed_password,
         role=schemas.UserRole.PATIENT,
-        phone_number=payload.phone_number,
-        date_of_birth=payload.date_of_birth,
-        gender=payload.gender,
-        country=payload.country,
-        state_of_residence=payload.state_of_residence,
-        home_address=payload.home_address,
     )
     db.add(user)
     db.commit()
@@ -70,8 +64,7 @@ def patient_signup(payload: schemas.PatientCreate, db: Session = Depends(get_db)
 
     # Create patient record
     patient = models.Patient(
-        user_id=user.id,
-        hospital_card_id=payload.hospital_card_id
+        user_id=user.id
     )
     db.add(patient)
     db.commit()
@@ -82,7 +75,7 @@ def patient_signup(payload: schemas.PatientCreate, db: Session = Depends(get_db)
 
 ##### DOCTOR SIGNUP SESSION #####
 @router.post("/signup/doctor", status_code=201, response_model=schemas.DoctorResponse)
-def doctor_signup(payload: schemas.DoctorCreate, token: str, db: Session = Depends(get_db)):
+def doctor_signup(payload: schemas.UserCreate, token: str, db: Session = Depends(get_db)):
 
     # Validate the signup token
     signup_link = db.query(models.SignupLink).filter(models.SignupLink.token == token).first()
@@ -126,26 +119,15 @@ def doctor_signup(payload: schemas.DoctorCreate, token: str, db: Session = Depen
         email=payload.email,
         password=hashed_password,
         role=schemas.UserRole.DOCTOR,
-        phone_number=payload.phone_number,
-        date_of_birth=payload.date_of_birth,
-        gender=payload.gender,
-        country=payload.country,
-        state_of_residence=payload.state_of_residence,
-        home_address=payload.home_address,
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
-    # Create doctor record
+    # Create Doctor record
     doctor = models.Doctor(
-        user_id=user.id,
-        hospital_id=payload.hospital_id,
-        role_id=payload.role_id,
-        specialization=payload.specialization,
-        years_of_experience=payload.years_of_experience
+        user_id=user.id
     )
-
     db.add(doctor)
     db.commit()
     db.refresh(doctor)
@@ -155,7 +137,7 @@ def doctor_signup(payload: schemas.DoctorCreate, token: str, db: Session = Depen
 
 ### ADMIN SESSION
 @router.post("/signup/admin", status_code=201, response_model=schemas.AdminResponse)
-def admin_signup(payload: schemas.AdminCreate, token: str, db: Session = Depends(get_db)):
+def admin_signup(payload: schemas.UserCreate, token: str, db: Session = Depends(get_db)):
 
     # Validate the signup token
     signup_link = db.query(models.SignupLink).filter(models.SignupLink.token == token).first()
@@ -199,12 +181,6 @@ def admin_signup(payload: schemas.AdminCreate, token: str, db: Session = Depends
         email=payload.email,
         password=hashed_password,
         role=schemas.UserRole.ADMIN,
-        phone_number=payload.phone_number,
-        date_of_birth=payload.date_of_birth,
-        gender=payload.gender,
-        country=payload.country,
-        state_of_residence=payload.state_of_residence,
-        home_address=payload.home_address,
     )
     db.add(user)
     db.commit()
@@ -213,9 +189,6 @@ def admin_signup(payload: schemas.AdminCreate, token: str, db: Session = Depends
     # Create admin record
     admin = models.Admin(
         user_id=user.id,
-        hospital_id=payload.hospital_id,
-        hospital_admin_id=payload.hospital_admin_id,
-        admin_type=payload.admin_type
     )
 
     db.add(admin)
