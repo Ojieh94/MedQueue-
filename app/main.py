@@ -10,12 +10,21 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=["https://queue-medix.vercel.app"],  # Deployed frontend
+    # Local frontend with dynamic ports
+    allow_origin_regex=r"http://localhost:\d+",
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_credentials=True,
 )
 
 
