@@ -33,7 +33,7 @@ def hospital_signup(payload: schemas.HospitalCreate, db: Session = Depends(get_d
     return create_hospital(db=db, payload=payload)
 
 
-@router.post("/signup/patient", status_code=201, response_model=schemas.User)
+@router.post("/signup/patient", status_code=201, response_model=schemas.PatientResponse)
 def patient_signup(payload: schemas.UserCreate, db: Session = Depends(get_db)):
     # Check if the email already exists
     patient = get_user_by_email(db, email=payload.email)
@@ -62,8 +62,10 @@ def patient_signup(payload: schemas.UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
 
+    dummy_patient_data = schemas.PatientCreate()
     # Create patient record
     patient = models.Patient(
+        **dummy_patient_data.model_dump(),
         user_id=user.id
     )
     db.add(patient)
@@ -124,8 +126,10 @@ def doctor_signup(payload: schemas.UserCreate, token: str, db: Session = Depends
     db.commit()
     db.refresh(user)
 
+    doctor_dummy_data = schemas.DoctorCreate()
     # Create Doctor record
     doctor = models.Doctor(
+        **doctor_dummy_data.model_dump(),
         user_id=user.id
     )
     db.add(doctor)
@@ -136,7 +140,7 @@ def doctor_signup(payload: schemas.UserCreate, token: str, db: Session = Depends
 
 
 ### ADMIN SESSION
-@router.post("/signup/admin", status_code=201, response_model=schemas.AdminResponse)
+@router.post("/signup/admin", status_code=201, response_model=schemas.AdminBase)
 def admin_signup(payload: schemas.UserCreate, token: str, db: Session = Depends(get_db)):
 
     # Validate the signup token
@@ -186,8 +190,10 @@ def admin_signup(payload: schemas.UserCreate, token: str, db: Session = Depends(
     db.commit()
     db.refresh(user)
 
+    dummy_admin_payload = schemas.AdminCreate()
     # Create admin record
     admin = models.Admin(
+        **dummy_admin_payload.model_dump(),
         user_id=user.id,
     )
 

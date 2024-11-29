@@ -64,7 +64,7 @@ class Doctor(Base):
     country = Column(String, nullable=False)
     state_of_residence = Column(String, nullable=False)
     home_address = Column(String(255), nullable=False)
-    hospital_id = Column(Integer, ForeignKey("hospitals.id"), nullable=False)
+    hospital_id = Column(Integer, ForeignKey("hospitals.id"), nullable=True)
     role_id = Column(String(20), nullable=True)
     specialization = Column(String, nullable=False)
     is_available = Column(Boolean, default=True, nullable=False)

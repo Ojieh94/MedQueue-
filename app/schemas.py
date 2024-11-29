@@ -103,17 +103,20 @@ class Hospital(HospitalBase):
 
 # Base Model for Doctor
 class DoctorBase(BaseModel):
-    hospital_id: int
+    hospital_id: int | None
     role_id: str | None
-    specialization: str
-    phone_number: str
-    date_of_birth: datetime
-    gender: str
-    country: str
-    state_of_residence: str
-    home_address: str
-    years_of_experience: int
+    specialization: str = ""
+    phone_number: str = ""
+    date_of_birth: datetime = datetime.now()
+    gender: str = ""
+    country: str = ""
+    state_of_residence: str = ""
+    home_address: str = ""
+    years_of_experience: int = 0
     is_available: bool = True
+
+class DoctorCreate(DoctorBase):
+    pass
 
     
 class DoctorUpdate(UserUpdate):
@@ -137,15 +140,18 @@ class Doctor(DoctorBase):
 
 # Base Model for Admin
 class AdminBase(BaseModel):
-    phone_number: str
-    date_of_birth: datetime
-    gender: str
-    country: str
-    state_of_residence: str
-    home_address: str
+    phone_number: str = ""
+    date_of_birth: datetime = datetime.now()
+    gender: str = ""
+    country: str = ""
+    state_of_residence: str = ""
+    home_address: str = ""
     hospital_id: Optional[int]
-    hospital_admin_id: str
-    admin_type: AdminType
+    hospital_admin_id: str = ""
+    admin_type: AdminType = AdminType.HOSPITAL_ADMIN
+
+class AdminCreate(AdminBase):
+    pass
 
 class Admin(AdminBase):
     id: int
@@ -190,13 +196,13 @@ class MedicalRecord(MedicalRecordBase):
 
 # Base Model for Patient
 class PatientBase(BaseModel):
-    phone_number: str
-    date_of_birth: datetime
-    gender: str
-    country: str
-    state_of_residence: str
-    home_address: str
-    hospital_card_id: str | None
+    phone_number: str = "Phone Number"
+    date_of_birth: datetime = datetime.now()
+    gender: str = "Gender"
+    country: str = "Country"
+    state_of_residence: str = "Avenue"
+    home_address: str = "Home Address"
+    hospital_card_id: str = ""
 
 
 class PatientCreate(PatientBase):
@@ -256,11 +262,7 @@ class Appointment(AppointmentBase):
 
 
 # Response Models
-class DoctorResponse(BaseModel):
-    role_id: str | None
-    specialization: str
-    years_of_experience: int
-    is_available: bool = True
+class DoctorResponse(DoctorBase):
     user: UserBase
     hospital: HospitalBase
 

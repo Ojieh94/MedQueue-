@@ -20,7 +20,7 @@ def get_users(db: Session, offset: int = 0, limit: int = 10, search: Optional[st
     return query.offset(offset).limit(limit).all()
 
 def get_user(db: Session, user_id: int) -> models.User:
-    return db.query(models.UserRole).filter(models.User.id == user_id).first()
+    return db.query(models.User).filter(models.User.id == user_id).first()
 
 def delete_user(db: Session, user_id: int):
     user = get_user(db=db, user_id=user_id)
