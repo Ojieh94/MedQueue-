@@ -209,5 +209,11 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = create_access_token(data={"sub": user.email})
+    
+    token_data = {"sub": user.email, "user_id": user.id}
+    if hasattr(user, 'role'):
+        token_data["user_role"] = user.role
+
+    access_token = create_access_token(data=token_data)
+
     return {"access_token": access_token, "token_type": "bearer"}

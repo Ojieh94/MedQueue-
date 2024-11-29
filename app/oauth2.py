@@ -55,8 +55,18 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
-        if not username:
+        user_id: int = payload.get("user_id")
+        user_role: Optional[str] = payload.get("user_role")
+
+        if not username or not user_id:
             raise credentials_exception
+    
+        if user_role is not None:
+            roles = {schemas.UserRole.ADMIN, schemas.UserRole.DOCTOR, schemas.UserRole.PATIENT}
+
+        if user_role not in roles:
+            raise credentials_exception
+        
     except JWTError:
         raise credentials_exception
     user = get_hospital_or_user(db, email=username)
