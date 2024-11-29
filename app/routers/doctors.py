@@ -62,7 +62,7 @@ def get_available_doctors(hospital_id: int, db: Session = Depends(get_db), curre
     return doctors
 
 @router.put('/doctors/{doctor_id}', status_code=200, response_model=schemas.DoctorResponse)
-def update_doctor(doctor_id: int, doctor_payload: schemas.DoctorCreate, db: Session = Depends(get_db), current_user: schemas.Doctor = Depends(get_current_user)):
+def update_doctor(doctor_id: int, doctor_payload: schemas.DoctorUpdate, db: Session = Depends(get_db), current_user: schemas.Doctor = Depends(get_current_user)):
     db_doctor = doctor_crud.get_doctor(db=db, doctor_id=doctor_id)
     if not db_doctor:
         raise HTTPException(
