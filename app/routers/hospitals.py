@@ -27,6 +27,37 @@ def get_all_hospitals(db: Session = Depends(get_db), offset: int = 0, limit: int
     )
     return hospitals
 
+@router.get('/hospitals/doctors', status_code=status.HTTP_200_OK, response_model=List[schemas.HospitalDoctors])
+def get_hospital_doctors(hospital_id: int, db: Session = Depends(get_db)):
+
+    hospital = hospital_crud.get_hospital_id(hospital_id, db)
+    if not hospital:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Hospital not found")
+    
+    doctors = hospital_crud.get_hospital_doctors(hospital_id, db)
+    return doctors
+
+
+@router.get('/hospitals/available_doctors', status_code=status.HTTP_200_OK, response_model=List[schemas.HospitalDoctors])
+def get_available_hospital_doctors(hospital_id: int, db: Session = Depends(get_db)):
+
+    hospital = hospital_crud.get_hospital_id(hospital_id, db)
+    if not hospital:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Hospital not found")
+    
+    doctors = hospital_crud.get_hospital_available_doctors(hospital_id, db)
+    return doctors
+
+@router.get('/hospitals/appointments', status_code=status.HTTP_200_OK, response_model=List[schemas.Appointment])
+def get_hospital_appointments(hospital_id: int, db: Session = Depends(get_db)):
+
+    hospital = hospital_crud.get_hospital_id(hospital_id, db)
+    if not hospital:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Hospital not found")
+    
+    appointments = hospital_crud.get_hospital_appointments(hospital_id, db)
+    return appointments
+
 @router.get('/hospitals/{hospital_id}', status_code=status.HTTP_200_OK, response_model=schemas.Hospital)
 def get_single_hospital(hospital_id: int, db: Session = Depends(get_db)):
 

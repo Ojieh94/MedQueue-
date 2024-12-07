@@ -11,7 +11,7 @@ delete patient
 """
 
 
-def get_patient_by_user_id(db: Session, user_id: int) -> models.Doctor:
+def get_patient_by_user_id(db: Session, user_id: int) -> models.Patient:
     return db.query(models.Patient).join(models.User).filter(models.Patient.user_id == user_id)
 
 def get_patient_by_email(db: Session, email: str):

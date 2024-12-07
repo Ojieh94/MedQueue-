@@ -22,7 +22,7 @@ def get_all_users(db: Session = Depends(get_db), current_user: schemas.User = De
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized")
 
-    # Check if current user is super admin(endpoint is only accessible to super admins)
+    # Check if current user is super admin(endpoint is also accessible to super admins)
     if admin_user.admin_type != schemas.AdminType.SUPER_ADMIN:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Accessible to only super admins")
