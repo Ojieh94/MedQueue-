@@ -77,7 +77,7 @@ def patient_signup(payload: schemas.UserCreate, db: Session = Depends(get_db)):
 
 ##### DOCTOR SIGNUP SESSION #####
 @router.post("/signup/doctor", status_code=201, response_model=schemas.DoctorResponse)
-def doctor_signup(payload: schemas.UserCreate, token: str, db: Session = Depends(get_db)):
+def doctor_signup(payload: schemas.DoctorUserCreate, token: str, db: Session = Depends(get_db)):
 
     # Validate the signup token
     signup_link = db.query(models.SignupLink).filter(models.SignupLink.token == token).first()
@@ -130,7 +130,8 @@ def doctor_signup(payload: schemas.UserCreate, token: str, db: Session = Depends
     # Create Doctor record
     doctor = models.Doctor(
         **doctor_dummy_data.model_dump(),
-        user_id=user.id
+        user_id=user.id,
+        hospital_id=payload.hospital_id
     )
     db.add(doctor)
     db.commit()
@@ -194,7 +195,7 @@ def admin_signup(payload: schemas.UserCreate, token: str, db: Session = Depends(
     # Create admin record
     admin = models.Admin(
         **dummy_admin_payload.model_dump(),
-        user_id=user.id,
+        user_id=user.id
     )
 
     db.add(admin)

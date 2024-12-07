@@ -18,15 +18,7 @@ delete patient
 """
 
 @router.get("/patients", status_code=status.HTTP_200_OK, response_model=List[schemas.PatientResponse])
-def get_all_patients(skip: int = 0, limit: int = 10, search: Optional[str] = "your search here", db: Session = Depends(get_db), admin_user: models.User = Depends(get_current_user)):
-
-    allowed_admins = {schemas.UserRole.ADMIN, schemas.UserRole.DOCTOR}
-
-    # Check if current user is an admin(endpoint is only accessible to super admins and hospital admins)
-    if admin_user.role not in allowed_admins:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized! Aborting..."
-        )
+def get_all_patients(skip: int = 0, limit: int = 10, search: Optional[str] = "your search here", db: Session = Depends(get_db)):
     
     patients = patient_crud.get_patients(skip, limit, search, db)
     return patients

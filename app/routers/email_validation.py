@@ -9,13 +9,15 @@ router = APIRouter(
 )
 
 @router.post("/generate-email-token", status_code=status.HTTP_201_CREATED)
-def generate_email_token(email: schemas.EmailValidationRequest, db: Session = Depends(database.get_db)):
+def generate_email_token(email: str, db: Session = Depends(database.get_db)):
     # Find the user by email
     user = user_crud.get_user_by_email(db=db, email=email)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
+    print("are we  reachingh here?")
+    print(email)
     
     # Generate the email validation token
     token = create_email_validation_token(email)

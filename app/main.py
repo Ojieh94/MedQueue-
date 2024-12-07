@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from app.database import engine, Base, SessionLocal
 from app.routers import (
     admins, auth, hospitals, medical_records, users, doctors,
-    sign_up_link as link_gen, email_validation, department, appointment
+    sign_up_link as link_gen, email_validation, department, appointment, patients
 )
 from app.crud import sign_up_link as link
 from fastapi.middleware.cors import CORSMiddleware
@@ -62,6 +62,7 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(hospitals.router)
 app.include_router(doctors.router)
+app.include_router(patients.router)
 app.include_router(department.router)
 app.include_router(appointment.router)
 app.include_router(admins.router)
