@@ -17,8 +17,8 @@ update hospital details
 delete/remove hospital
 """
 
-@router.get("/hospitals", status_code=status.HTTP_200_OK, response_model=List[schemas.Hospital])
-def get_all_hospitals(db: Session = Depends(get_db), offset: int = 0, limit: int = 10, search: Optional[str] = "Hospital name"):
+@router.get("/hospitals", status_code=status.HTTP_200_OK, response_model=List[schemas.HospitalBase])
+def get_all_hospitals(db: Session = Depends(get_db), offset: int = 0, limit: int = 10, search: Optional[str] = ""):
     hospitals = hospital_crud.get_hospitals(
         db,
         offset=offset,
