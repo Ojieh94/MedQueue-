@@ -37,6 +37,18 @@ def get_hospitals(db: Session, offset: int = 0, limit: int = 10, search: Optiona
     
     return query.offset(offset).limit(limit).all()
 
+#get hospital doctors
+def get_hospital_doctors(hospital_id: int, db: Session):
+    return db.query(models.Doctor).filter(models.Doctor.hospital_id == hospital_id).all()
+
+#get available doctors 
+def get_hospital_available_doctors(hospital_id: int, db: Session):
+    return db.query(models.Doctor).filter(models.Doctor.hospital_id == hospital_id, models.Doctor.is_available == True).all()
+
+#get all appointments
+def get_hospital_appointments(hospital_id: int, db: Session):
+    return db.query(models.Appointment).filter(models.Appointment.hospital_id == hospital_id).all()
+
 def get_hospital_by_name(name: str, db: Session) -> models.Hospital:
     return db.query(models.Hospital).filter(models.Hospital.name == name).first()
 

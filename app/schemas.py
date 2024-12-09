@@ -39,11 +39,18 @@ class UserBase(BaseModel):
     last_name: str
     email: EmailStr
     role: UserRole
-    
 
 
 class UserCreate(UserBase):
     password: str
+
+class DoctorUserCreate(UserBase):
+    hospital_id: int
+    password: str
+
+# class HospitalAdminUserCreate(UserBase):
+#     hospital_id: int
+#     password: str
 
 
 class UserUpdate(BaseModel):
@@ -56,6 +63,11 @@ class User(UserBase):
     id: int
     is_active: bool = False
     created_at: datetime = datetime.now()
+
+    model_config = ConfigDict(from_attributes=True)
+
+class UserOut(UserBase):
+    pass
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -100,11 +112,9 @@ class Hospital(HospitalBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-
 # Base Model for Doctor
 class DoctorBase(BaseModel):
-    hospital_id: int | None
-    role_id: str | None
+    role_id: Optional[str] = ""
     specialization: str = ""
     phone_number: str = ""
     date_of_birth: datetime = datetime.now()
@@ -115,10 +125,11 @@ class DoctorBase(BaseModel):
     years_of_experience: int = 0
     is_available: bool = True
 
+
 class DoctorCreate(DoctorBase):
     pass
 
-    
+
 class DoctorUpdate(UserUpdate):
     hospital_id: Optional[int]
     role_id: Optional[str]
@@ -131,12 +142,24 @@ class DoctorUpdate(UserUpdate):
     home_address: Optional[str]
     years_of_experience: Optional[int]
 
+
 class Doctor(DoctorBase):
     id: int
     user_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
+class DoctorOut(BaseModel):
+    user: UserOut
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class HospitalDoctors(DoctorOut):
+    is_available: bool
+    hospital_id: int
+
+    model_config = ConfigDict(from_attributes=True)
 
 # Base Model for Admin
 class AdminBase(BaseModel):
@@ -150,18 +173,20 @@ class AdminBase(BaseModel):
     hospital_admin_id: str = ""
     admin_type: AdminType = AdminType.HOSPITAL_ADMIN
 
+
 class AdminCreate(AdminBase):
     pass
+
 
 class Admin(AdminBase):
     id: int
     user_id: int
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 
 class AdminUpdate(UserUpdate):
-    phone_number:Optional[str]
+    phone_number: Optional[str]
     date_of_birth: Optional[datetime]
     gender: Optional[str]
     country: Optional[str]
@@ -171,7 +196,6 @@ class AdminUpdate(UserUpdate):
     admin_type: Optional[AdminType]
 
 
-
 # Base Model for Medical Record
 class MedicalRecordBase(BaseModel):
     patient_id: int
@@ -179,8 +203,10 @@ class MedicalRecordBase(BaseModel):
     record_date: datetime
     doctor_id: int
 
+
 class MedicalRecordCreate(MedicalRecordBase):
     pass
+
 
 class MedicalRecordUpdate(BaseModel):
     patient_id: Optional[int]
@@ -188,9 +214,10 @@ class MedicalRecordUpdate(BaseModel):
     record_date: Optional[datetime]
     doctor_id: Optional[int]
 
+
 class MedicalRecord(MedicalRecordBase):
     id: int
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -208,6 +235,7 @@ class PatientBase(BaseModel):
 class PatientCreate(PatientBase):
     pass
 
+
 class PatientUpdate(UserUpdate):
     phone_number: Optional[str]
     date_of_birth: Optional[datetime]
@@ -217,6 +245,7 @@ class PatientUpdate(UserUpdate):
     home_address: Optional[str]
     hospital_card_id: Optional[str]
 
+
 class Patient(PatientBase):
     id: int
     user_id: int
@@ -224,7 +253,10 @@ class Patient(PatientBase):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 # Patient Response models
+
+
 class PatientResponse(PatientBase):
     id: int
     user: UserBase
@@ -232,33 +264,37 @@ class PatientResponse(PatientBase):
 
     model_config = ConfigDict(from_attributes=True)
 
+class PatientOut(PatientBase):
+    user: UserBase
+
+    model_config = ConfigDict(from_attributes=True)
+
 
 # Base Model for Appointment
-class AppointmentBase(BaseModel):
+class AppointmentCreate(BaseModel):
     appointment_note: str
-    patient_id: int
-    doctor_id: int
     hospital_id: int
-    scheduled_time: datetime
-
-
-class AppointmentCreate(AppointmentBase):
-    pass
+    scheduled_time: datetime = datetime.now()
 
 
 class AppointmentStatusUpdate(BaseModel):
     status: AppointmentStatus
 
 
-class Appointment(AppointmentBase):
+class Appointment(BaseModel):
     id: int
-    patient: PatientResponse
+    appointment_note: str
+    scheduled_time: datetime
+    patient: PatientOut
     hospital: Hospital
+    doctor: DoctorOut
     status: AppointmentStatus = AppointmentStatus.PENDING
-    doctor: Doctor
 
     model_config = ConfigDict(from_attributes=True)
 
+
+class AssignDoctor(BaseModel):
+    doctor_id: int
 
 
 # Response Models

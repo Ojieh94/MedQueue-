@@ -13,7 +13,7 @@ check pending appointment
 switch apointment status
 """
 
-def create_appointment(patient_id: int, payload: schemas.AppointmentCreate, db: Session) -> models.Appointment:
+def create_appointment(patient_id: int, payload: schemas.AppointmentCreate, db: Session):
     
     appointment = models.Appointment(**payload.model_dump(), patient_id=patient_id)
     db.add(appointment)
@@ -33,8 +33,7 @@ def get_appointment_by_id(appointment_id: int, db: Session) -> models.Appointmen
     return db.query(models.Appointment).filter(models.Appointment.id == appointment_id).first()
 
 def get_uncompleted_appointments(db: Session) -> List[models.Appointment]:
-    query = db.query(models.Appointment).filter(models.Appointment.status != schemas.AppointmentStatus.COMPLETED).order_by(models.Appointment.scheduled_time)
-    return query.all()
+    return db.query(models.Appointment).filter(models.Appointment.status != schemas.AppointmentStatus.COMPLETED).order_by(models.Appointment.scheduled_time).all()
 
 def cancel_appointment(appointment_id: int, db: Session):
     appointment = get_appointment_by_id(appointment_id, db)
@@ -50,6 +49,10 @@ def cancel_appointment(appointment_id: int, db: Session):
 def get_pending_appointments(db: Session) -> List[models.Appointment]:
     query = db.query(models.Appointment).filter(models.Appointment.status == schemas.AppointmentStatus.PENDING).order_by(models.Appointment.scheduled_time)
     return query.all()
+
+def get_patient_pending_appointments(patient_id: int, db: Session) -> models.Appointment:
+    query = db.query(models.Appointment).filter(models.Appointment.patient_id == patient_id, models.Appointment.status != schemas.AppointmentStatus.COMPLETED)
+    return query.first()
 
 def switch_appointment_status(appointment_id: int, new_status: schemas.AppointmentStatusUpdate, db: Session) -> models.Appointment:
     appointment = get_appointment_by_id(appointment_id, db)

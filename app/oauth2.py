@@ -64,6 +64,7 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
         if user_role is not None:
             roles = {schemas.UserRole.ADMIN, schemas.UserRole.DOCTOR, schemas.UserRole.PATIENT}
 
+        roles = {schemas.UserRole.ADMIN, schemas.UserRole.DOCTOR, schemas.UserRole.PATIENT}
         if user_role not in roles:
             raise credentials_exception
         
