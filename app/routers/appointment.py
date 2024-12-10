@@ -21,7 +21,7 @@ router = APIRouter(
     tags=['Appointments']
 )
 
-@router.put('/appointments/{appointment_id}/doctor_assign', status_code=status.HTTP_202_ACCEPTED)
+@router.put('/appointments/{appointment_id}/assign_doctor', status_code=status.HTTP_202_ACCEPTED)
 def assign_doctor(appointment_id: int, payload: schemas.AssignDoctor, db: Session = Depends(get_db)):
     
     appointment = apt_crud.get_appointment_by_id(appointment_id, db)

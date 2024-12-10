@@ -287,7 +287,7 @@ class Appointment(BaseModel):
     scheduled_time: datetime
     patient: PatientOut
     hospital: Hospital
-    doctor: DoctorOut
+    doctor: DoctorOut | None
     status: AppointmentStatus = AppointmentStatus.PENDING
 
     model_config = ConfigDict(from_attributes=True)
