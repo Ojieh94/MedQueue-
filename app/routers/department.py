@@ -19,24 +19,24 @@ delete department
 """
 
 @router.post('/departments/add', status_code=status.HTTP_201_CREATED, response_model=schemas.Department)
-def add_department(payload: schemas.DepartmentCreate, db: Session = Depends(get_db), admin_user: models.Admin = Depends(get_current_user)):
+def add_department(payload: schemas.DepartmentCreate, db: Session = Depends(get_db)): #, admin_user: models.Admin = Depends(get_current_user)):
 
-    #authorization checks
-    allowed_admins = {schemas.AdminType.DEPARTMENT_ADMIN, schemas.AdminType.HOSPITAL_ADMIN}
-    if admin_user.admin_type not in allowed_admins:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized to create department")
+    # #authorization checks
+    # allowed_admins = {schemas.AdminType.DEPARTMENT_ADMIN, schemas.AdminType.HOSPITAL_ADMIN}
+    # if admin_user.admin_type not in allowed_admins:
+    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized to create department")
     
     department = dpt_crud.create_department(payload, db)
     return department
 
 @router.get('/departments', status_code=status.HTTP_200_OK, response_model=List[schemas.Department])
-def list_departments(skip: int = 0, limit: int = 10, search: Optional[str] = "", db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user), admin_user: models.Admin = Depends(get_current_user)):
+def list_departments(skip: int = 0, limit: int = 10, search: Optional[str] = "", db: Session = Depends(get_db)):#, current_user: models.User = Depends(get_current_user), admin_user: models.Admin = Depends(get_current_user)):
     departments = dpt_crud.list_departments(skip, limit, search, db)
     
     return departments
 
 @router.get('/departments/{department_id}', status_code=status.HTTP_200_OK, response_model=schemas.Department)
-def get_department(department_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user), admin_user: models.Admin = Depends(get_current_user)):
+def get_department(department_id: int, db: Session = Depends(get_db)):#, current_user: models.User = Depends(get_current_user), admin_user: models.Admin = Depends(get_current_user)):
     department = dpt_crud.get_department_by_id(department_id, db)
     
     if not department:
@@ -45,7 +45,7 @@ def get_department(department_id: int, db: Session = Depends(get_db), current_us
     return department
 
 @router.put('/departments/{department_id}', status_code=status.HTTP_202_ACCEPTED, response_model=schemas.Department)
-def update_department(department_id: int, payload: schemas.DepartmentUpdate, db: Session = Depends(get_db), admin_user: models.Admin = Depends(get_current_user)):
+def update_department(department_id: int, payload: schemas.DepartmentUpdate, db: Session = Depends(get_db)):#, admin_user: models.Admin = Depends(get_current_user)):
 
     department = dpt_crud.get_department_by_id(department_id, db)
 
@@ -55,18 +55,18 @@ def update_department(department_id: int, payload: schemas.DepartmentUpdate, db:
         )
     
     #authorization check
-    allowed_users = {schemas.AdminType.HOSPITAL_ADMIN, schemas.AdminType.DEPARTMENT_ADMIN}
+    # allowed_users = {schemas.AdminType.HOSPITAL_ADMIN, schemas.AdminType.DEPARTMENT_ADMIN}
 
-    if admin_user.admin_type not in allowed_users:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized to update department"
-        )
+    # if admin_user.admin_type not in allowed_users:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized to update department"
+    #     )
     
     updated_department = dpt_crud.update_department(department_id, payload, db)
     return updated_department
 
 @router.delete('/departments/{department_id}', status_code=status.HTTP_202_ACCEPTED)
-def delete_department(department_id: int, db: Session = Depends(get_db), admin_user: models.Admin = Depends(get_current_user)):
+def delete_department(department_id: int, db: Session = Depends(get_db)):#, admin_user: models.Admin = Depends(get_current_user)):
 
     department = dpt_crud.get_department_by_id(department_id, db)
     
@@ -76,11 +76,11 @@ def delete_department(department_id: int, db: Session = Depends(get_db), admin_u
         )
     
     #authorization check
-    allowed_admins = {schemas.AdminType.SUPER_ADMIN, schemas.AdminType.HOSPITAL_ADMIN}
-    if admin_user.admin_type not in allowed_admins:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized to delete department"
-        )
+    # allowed_admins = {schemas.AdminType.SUPER_ADMIN, schemas.AdminType.HOSPITAL_ADMIN}
+    # if admin_user.admin_type not in allowed_admins:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized to delete department"
+    #     )
     
     dpt_crud.delete_department(department_id, db)
 
