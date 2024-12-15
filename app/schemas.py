@@ -150,6 +150,7 @@ class Doctor(DoctorBase):
     model_config = ConfigDict(from_attributes=True)
 
 class DoctorOut(BaseModel):
+    id: int
     user: UserOut
 
     model_config = ConfigDict(from_attributes=True)
@@ -299,6 +300,7 @@ class AssignDoctor(BaseModel):
 
 # Response Models
 class DoctorResponse(DoctorBase):
+    id: int
     user: UserBase
     hospital: HospitalBase
 
