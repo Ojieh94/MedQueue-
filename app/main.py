@@ -27,7 +27,7 @@ app = FastAPI(lifespan=lifespan)
 # CORS Middleware setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://queue-medix.vercel.app"],  # Deployed frontend
+    allow_origins=["*"], 
     allow_origin_regex=r"http://localhost:\d+",  # Local frontend with dynamic ports
     allow_methods=["*"],
     allow_headers=["*"],
