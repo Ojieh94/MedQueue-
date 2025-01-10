@@ -1,62 +1,73 @@
 from enum import Enum
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from datetime import datetime
 from typing import List, Optional
 
+# Custom EmailStr to ensure case insensitivity
+
+
+class CaseInsensitiveEmailStr(EmailStr):
+    @classmethod
+    def validate(cls, value: str) -> str:
+        value = super().validate(value)
+        return value.lower()
 
 # Enum for User Roles
+
+
 class UserRole(str, Enum):
     ADMIN = "admin"
     DOCTOR = "doctor"
     PATIENT = "patient"
 
-
 # Enum for Admin Roles
+
+
 class AdminType(str, Enum):
     SUPER_ADMIN = "super_admin"
     HOSPITAL_ADMIN = "hospital_admin"
     DEPARTMENT_ADMIN = "dept_admin"
 
-
 # Enum for Appointment Status
+
+
 class AppointmentStatus(str, Enum):
     PENDING = "pending"
     COMPLETED = "completed"
     CANCELED = "canceled"
     IN_PROGRESS = "in_progress"
 
-
 # Enum for Hospital Ownership type
+
+
 class OwnershipType(str, Enum):
     PRIVATE = "private"
     GOVERNMENT = "government"
     NGO = "ngo"
 
-
 # Base Model for User
+
+
 class UserBase(BaseModel):
     first_name: str
     last_name: str
-    email: EmailStr
+    email: CaseInsensitiveEmailStr
     role: UserRole
 
 
 class UserCreate(UserBase):
     password: str
 
+
 class DoctorUserCreate(UserBase):
     hospital_id: int
     password: str
-
-# class HospitalAdminUserCreate(UserBase):
-#     hospital_id: int
-#     password: str
 
 
 class UserUpdate(BaseModel):
     first_name: Optional[str]
     last_name: Optional[str]
-    email: Optional[EmailStr]
+    email: Optional[CaseInsensitiveEmailStr]
 
 
 class User(UserBase):
@@ -66,19 +77,18 @@ class User(UserBase):
 
     model_config = ConfigDict(from_attributes=True)
 
-class UserOut(UserBase):
-    pass
 
+class UserOut(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
-
-
 # Base Model for Hospital
+
+
 class HospitalBase(BaseModel):
     name: str
     address: str
     state: str
-    email: EmailStr
+    email: CaseInsensitiveEmailStr
     website: str
     license_number: str
     phone_number: str
@@ -96,7 +106,7 @@ class HospitalUpdate(BaseModel):
     name: Optional[str]
     address: Optional[str]
     state: Optional[str]
-    email: Optional[EmailStr]
+    email: Optional[CaseInsensitiveEmailStr]
     website: Optional[str]
     license_number: Optional[str]
     phone_number: Optional[str]
@@ -111,8 +121,9 @@ class Hospital(HospitalBase):
 
     model_config = ConfigDict(from_attributes=True)
 
-
 # Base Model for Doctor
+
+
 class DoctorBase(BaseModel):
     role_id: Optional[str] = ""
     specialization: str = ""
@@ -149,6 +160,7 @@ class Doctor(DoctorBase):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class DoctorOut(BaseModel):
     id: int
     user: UserOut
@@ -163,6 +175,8 @@ class HospitalDoctors(DoctorOut):
     model_config = ConfigDict(from_attributes=True)
 
 # Base Model for Admin
+
+
 class AdminBase(BaseModel):
     phone_number: str = ""
     date_of_birth: datetime = datetime.now()
@@ -196,8 +210,9 @@ class AdminUpdate(UserUpdate):
     hospital_id: Optional[int]
     admin_type: Optional[AdminType]
 
-
 # Base Model for Medical Record
+
+
 class MedicalRecordBase(BaseModel):
     patient_id: int
     description: str
@@ -221,8 +236,9 @@ class MedicalRecord(MedicalRecordBase):
 
     model_config = ConfigDict(from_attributes=True)
 
-
 # Base Model for Patient
+
+
 class PatientBase(BaseModel):
     phone_number: str = "Phone Number"
     date_of_birth: datetime = datetime.now()
@@ -255,9 +271,6 @@ class Patient(PatientBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-# Patient Response models
-
-
 class PatientResponse(PatientBase):
     id: int
     user: UserBase
@@ -265,13 +278,15 @@ class PatientResponse(PatientBase):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class PatientOut(PatientBase):
     user: UserBase
 
     model_config = ConfigDict(from_attributes=True)
 
-
 # Base Model for Appointment
+
+
 class AppointmentCreate(BaseModel):
     appointment_note: str
     hospital_id: int
@@ -297,8 +312,9 @@ class Appointment(BaseModel):
 class AssignDoctor(BaseModel):
     doctor_id: int
 
-
 # Response Models
+
+
 class DoctorResponse(DoctorBase):
     id: int
     user: UserBase
@@ -315,7 +331,7 @@ class AdminResponse(BaseModel):
 
 
 class EmailValidationRequest(BaseModel):
-    email: EmailStr
+    email: CaseInsensitiveEmailStr
 
 
 class EmailValidationResponse(BaseModel):
