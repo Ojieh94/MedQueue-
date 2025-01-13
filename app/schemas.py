@@ -352,3 +352,9 @@ class Department(DepartmentCreate):
     hospital: Hospital
 
     model_config = ConfigDict(from_attributes=True)
+
+# ## schema for password rest
+class PassReset(BaseModel):
+    email: EmailStr
+    new_password: str
+    confirm_password: str
