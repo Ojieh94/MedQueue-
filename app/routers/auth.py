@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
-from app.crud.users import get_user_by_email, update_hospital_password, update_password
+from app.crud.users import get_user_by_email
+from app.crud.password_reset import update_password, update_hospital_password
 from app.oauth2 import authenticate_user, create_access_token, get_current_user, hash_password
 from app.database import get_db
 from app import models, schemas

@@ -3,12 +3,13 @@ from app import schemas
 from app.crud.hospitals import get_hospital_by_email
 from app.crud.users import get_user_by_email
 from sqlalchemy.orm import Session
-
-from app.oauth2 import hash_password
 from app.utils import validate_hospital_password, validate_password
+from app.oauth2 import hash_password
+
 
 
 def update_password(payload: schemas.PassReset, db: Session):
+
     user = get_user_by_email(payload.email, db)
     if not user:
         return None
@@ -37,6 +38,7 @@ def update_password(payload: schemas.PassReset, db: Session):
 
 
 def update_hospital_password(payload: schemas.PassReset, db: Session):
+
     hospital = get_hospital_by_email(payload.email, db)
     if not hospital:
         return None

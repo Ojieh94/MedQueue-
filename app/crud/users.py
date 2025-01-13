@@ -3,7 +3,6 @@ from fastapi import Depends, HTTPException
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from app import models, schemas
-from app.utils import validate_hospital_password, validate_password
 
 def get_user_by_email(db: Session, email: str) -> models.User:
     return db.query(models.User).filter(models.User.email == email).first()
