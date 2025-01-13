@@ -4,7 +4,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from app import models, schemas
 from app.crud.hospitals import get_hospital_by_email
-from app.oauth2 import pwd_context, verify_password
+from app.oauth2 import pwd_context
 from app.utils import validate_hospital_password, validate_password
 
 def get_user_by_email(db: Session, email: str) -> models.User:
@@ -42,10 +42,11 @@ def update_password(payload: schemas.PassReset, db: Session):
     if payload.new_password != payload.confirm_password:
         return None
     
-    # checking if the user is trying to re-use the same password
-    if verify_password(payload.new_password, user.password):
-        raise HTTPException(status_code=400,
-                            detail="This is your previous password. Please use something stronger")
+    new_password_hashed = pwd_context.hash(payload.new_password)
+
+    # Check if password is same as old password
+    if user.password == new_password_hashed:
+        raise HTTPException(status_code=400, detail="Password cannot be the same as the current password")
     
     # Validate password
     password_validation_result = validate_password(
@@ -53,9 +54,8 @@ def update_password(payload: schemas.PassReset, db: Session):
 
     if password_validation_result != "Password is valid":
         raise HTTPException(status_code=400, detail=password_validation_result)
-
-    hashed_password = pwd_context.hash(password=payload.new_password)
-    user.password = hashed_password
+ 
+    user.password = new_password_hashed
     db.commit()
     db.refresh(user)
     return user
@@ -68,11 +68,13 @@ def update_hospital_password(payload: schemas.PassReset, db: Session):
 
     if payload.new_password != payload.confirm_password:
         return None
+    
+    new_password_hashed = pwd_context.hash(payload.new_password)
 
-    # checking if the user is trying to re-use the same password
-    if verify_password(payload.new_password, hospital.password):
-        raise HTTPException(status_code=400,
-                            detail="This is your previous password. Please use something stronger")
+    # Check if password is same as old password
+    if hospital.password == new_password_hashed:
+        raise HTTPException(
+            status_code=400, detail="Password cannot be the same as the current password")
     
     # Validate password
     password_validation_result = validate_hospital_password(
@@ -81,8 +83,7 @@ def update_hospital_password(payload: schemas.PassReset, db: Session):
     if password_validation_result != "Password is valid":
         raise HTTPException(status_code=400, detail=password_validation_result)
 
-    hashed_password = pwd_context.hash(password=payload.new_password)
-    hospital.password = hashed_password
+    hospital.password = new_password_hashed
     db.commit()
     db.refresh(hospital)
     return hospital
