@@ -59,3 +59,6 @@ def validate_signup_token(token: str, db: Session) -> bool:
     if signup_link.created_at < datetime.now() - timedelta(hours=24):
         return False
     return True
+
+
+

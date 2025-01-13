@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from app.crud.users import get_user_by_email, update_hospital_password, update_password
-from app.oauth2 import authenticate_user, create_access_token, get_current_user, pwd_context
+from app.oauth2 import authenticate_user, create_access_token, get_current_user, hash_password
 from app.database import get_db
 from app import models, schemas
 from app.crud.hospitals import get_hospital_by_email, create_hospital
@@ -28,7 +28,7 @@ def hospital_signup(payload: schemas.HospitalCreate, db: Session = Depends(get_d
     if password_validation_result != "Password is valid":
         raise HTTPException(status_code=400, detail=password_validation_result)
 
-    hashed_password = pwd_context.hash(payload.password)
+    hashed_password = hash_password(payload.password)
     payload.password = hashed_password
     return create_hospital(db=db, payload=payload)
 
@@ -47,7 +47,7 @@ def patient_signup(payload: schemas.UserCreate, db: Session = Depends(get_db)):
     if password_validation_result != "Password is valid":
         raise HTTPException(status_code=400, detail=password_validation_result)
 
-    hashed_password = pwd_context.hash(payload.password)
+    hashed_password = hash_password(payload.password)
     payload.password = hashed_password
 
     # Create user
@@ -111,7 +111,7 @@ def doctor_signup(payload: schemas.DoctorUserCreate, token: str, db: Session = D
     if password_validation_result != "Password is valid":
         raise HTTPException(status_code=400, detail=password_validation_result)
 
-    hashed_password = pwd_context.hash(payload.password)
+    hashed_password = hash_password(payload.password)
     payload.password = hashed_password
 
     # Create user
@@ -176,7 +176,7 @@ def admin_signup(payload: schemas.UserCreate, token: str, db: Session = Depends(
     if password_validation_result != "Password is valid":
         raise HTTPException(status_code=400, detail=password_validation_result)
 
-    hashed_password = pwd_context.hash(payload.password)
+    hashed_password = hash_password(payload.password)
     payload.password = hashed_password
 
     # Create user
