@@ -62,7 +62,7 @@ def update_password(payload: schemas.PasswordResetConfirm, db: Session):
 
 def create_password_reset_token(email: str, db: Session) -> str:    
     token = secrets.token_urlsafe(32)
-    reset_token = PasswordResetToken(token=token, email=email, expires_at=datetime.now() - timedelta(hours=24))
+    reset_token = PasswordResetToken(token=token, email=email, expires_at=datetime.now() + timedelta(hours=24))
     db.add(reset_token)
     db.commit()
     return token
