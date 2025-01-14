@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from app.crud.users import get_user_by_email
-from app.crud.password_reset import update_password, update_hospital_password
+# from app.crud.password_reset import update_password, update_hospital_password
 from app.oauth2 import authenticate_user, create_access_token, get_current_user, hash_password
 from app.database import get_db
 from app import models, schemas
@@ -227,38 +227,38 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.put('/auth/password/reset', status_code=status.HTTP_202_ACCEPTED)
-def password_reset(payload: schemas.PassReset, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
-    user = get_user_by_email(payload.email, db)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Invalid email address provided")
+# @router.put('/auth/password/reset', status_code=status.HTTP_202_ACCEPTED)
+# def password_reset(payload: schemas.PassReset, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
+#     user = get_user_by_email(payload.email, db)
+#     if not user:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+#                             detail="Invalid email address provided")
 
-    # Check if the authenticated user is authorized to make changes to current user
-    if user.id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authorized")
-
-
-    # updating the user password
-    update_password(payload, db)
-
-    return {"message": "Password updated successfully"}
+#     # Check if the authenticated user is authorized to make changes to current user
+#     if user.id != current_user.id:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authorized")
 
 
-@router.put('/hospital/password/reset', status_code=status.HTTP_202_ACCEPTED)
-def hospital_password_reset(payload: schemas.PassReset, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
-    user = get_hospital_by_email(payload.email, db)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Invalid email address provided")
+#     # updating the user password
+#     update_password(payload, db)
 
-    # Check if the authenticated user is authorized to make changes to current user
-    if user.id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authorized")
+#     return {"message": "Password updated successfully"}
 
-    # updating the user password
-    update_hospital_password(payload, db)
 
-    return {"message": "Password updated successfully"}
+# @router.put('/hospital/password/reset', status_code=status.HTTP_202_ACCEPTED)
+# def hospital_password_reset(payload: schemas.PassReset, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
+#     user = get_hospital_by_email(payload.email, db)
+#     if not user:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+#                             detail="Invalid email address provided")
+
+#     # Check if the authenticated user is authorized to make changes to current user
+#     if user.id != current_user.id:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authorized")
+
+#     # updating the user password
+#     update_hospital_password(payload, db)
+
+#     return {"message": "Password updated successfully"}

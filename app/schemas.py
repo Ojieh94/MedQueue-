@@ -354,7 +354,12 @@ class Department(DepartmentCreate):
     model_config = ConfigDict(from_attributes=True)
 
 # ## schema for password rest
-class PassReset(BaseModel):
+
+class PasswordReset(BaseModel):
+    email: EmailStr
+
+class PasswordResetConfirm(BaseModel):
     email: EmailStr
     new_password: str
     confirm_password: str
+
