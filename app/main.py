@@ -5,9 +5,10 @@ from contextlib import asynccontextmanager
 from app.database import engine, Base, SessionLocal
 from app.routers import (
     admins, auth, hospitals, medical_records, users, doctors,
-    sign_up_link as link_gen, email_validation, department, appointment, patients
+    sign_up_link as link_gen, email_validation, department, appointment, patients, password_reset
 )
 from app.crud import sign_up_link as link
+from app.crud import password_reset as reset_token
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -43,6 +44,10 @@ def cleanup_job():
     db: Session = SessionLocal()
     try:
         link.delete_expired_tokens(db)
+        reset_token.delete_expired_tokens(db)
+    
+    except Exception as e:
+        print(f"Error deleting tokens from database: {e}")
     finally:
         db.close()
 
@@ -56,6 +61,7 @@ def start_scheduler():
 
 
 # Include routers
+app.include_router(password_reset.router)
 app.include_router(email_validation.router)
 app.include_router(link_gen.router)
 app.include_router(auth.router)
