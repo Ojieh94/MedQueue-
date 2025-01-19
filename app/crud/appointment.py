@@ -64,3 +64,14 @@ def switch_appointment_status(appointment_id: int, new_status: schemas.Appointme
     db.commit()
     db.refresh(appointment)
     return appointment
+
+
+def delete_appointment(appointment_id: int, db: Session):
+    appointment = get_appointment_by_id(appointment_id, db)
+    
+    if not appointment:
+        return False
+    
+    db.delete(appointment)
+    db.commit()
+    return True

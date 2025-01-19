@@ -160,3 +160,16 @@ def update_appointment_status(appointment_id: int, new_status: schemas.Appointme
     db.commit()
 
     return {"message": f"Appointment status has been updated to {new_status.status}"}
+
+@router.delete('/appointments/{appointment_id}/delete', status_code=status.HTTP_202_ACCEPTED)
+def delete_db_appointment(appointment_id: int, db: Session = Depends(get_db)):
+
+    appointment = apt_crud.get_appointment_by_id(appointment_id, db)
+
+    if not appointment:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
+    
+    apt_crud.delete_appointment(appointment_id, db)
+    db.commit()
+
+    return {"message": "Appointment has been deleted successfully!"}
