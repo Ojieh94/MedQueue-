@@ -100,7 +100,7 @@ def update_hospital(hospital_id: int, payload: schemas.HospitalUpdate, db: Sessi
     return updated_hospital
 
 @router.delete('/hospitals/{hospital_id}', status_code=status.HTTP_202_ACCEPTED)
-def delete_hospital(hospital_id: int, db: Session = Depends(get_db), current_user: models.Hospital = Depends(get_current_user), admin_user: models.User = Depends(get_current_user)):
+def delete_hospital(hospital_id: int, db: Session = Depends(get_db)):#, current_user: models.Hospital = Depends(get_current_user), admin_user: models.User = Depends(get_current_user)):
 
     #hospital availability check
     hospital = hospital_crud.get_hospital_id(hospital_id, db)
@@ -110,22 +110,22 @@ def delete_hospital(hospital_id: int, db: Session = Depends(get_db), current_use
         )
     
     # authorization check
-    user = admin_crud.get_admin_by_user_id(db, admin_user.id)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Admin not found"
-        )
+    # user = admin_crud.get_admin_by_user_id(db, admin_user.id)
+    # if not user:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_404_NOT_FOUND, detail="Admin not found"
+    #     )
     
-    allowed_admins = {schemas.AdminType.SUPER_ADMIN, schemas.AdminType.HOSPITAL_ADMIN}
+    # allowed_admins = {schemas.AdminType.SUPER_ADMIN, schemas.AdminType.HOSPITAL_ADMIN}
 
-    # Check if current user is an admin(endpoint is only accessible to super admins and hospital admins)
+    # # Check if current user is an admin(endpoint is only accessible to super admins and hospital admins)
 
-    is_authorized = (user.admin_type in allowed_admins or current_user.id == hospital.id)
+    # is_authorized = (user.admin_type in allowed_admins or current_user.id == hospital.id)
 
-    if not is_authorized:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="You are not authorized the access this resource."
-        )
+    # if not is_authorized:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN, detail="You are not authorized the access this resource."
+    #     )
     
     hospital_crud.delete_hospital(hospital_id, db)
 
