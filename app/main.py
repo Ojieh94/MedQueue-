@@ -4,7 +4,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from contextlib import asynccontextmanager
 from app.database import engine, Base, SessionLocal
 from app.routers import (
-    admins, auth, hospitals, medical_records, users, doctors,
+    admins, auth, hospitals, medical_records, queue_sys, users, doctors,
     sign_up_link as link_gen, email_validation, department, appointment, patients, password_reset
 )
 from app.crud import sign_up_link as link
@@ -73,6 +73,7 @@ app.include_router(department.router)
 app.include_router(appointment.router)
 app.include_router(admins.router)
 app.include_router(medical_records.router)
+app.include_router(queue_sys.router)
 
 
 @app.get('/')

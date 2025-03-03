@@ -18,7 +18,7 @@ delete patient
 """
 
 @router.get("/patients", status_code=status.HTTP_200_OK, response_model=List[schemas.PatientResponse])
-def get_all_patients(skip: int = 0, limit: int = 10, search: Optional[str] = "your search here", db: Session = Depends(get_db)):
+def get_all_patients(skip: int = 0, limit: int = 10, search: Optional[str] = "", db: Session = Depends(get_db)):
     
     patients = patient_crud.get_patients(skip, limit, search, db)
     return patients

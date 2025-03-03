@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 # from app.oauth2 import get_current_user
@@ -48,27 +49,46 @@ def assign_doctor(appointment_id: int, payload: schemas.AssignDoctor, db: Sessio
 
     return {"message": "doctor assigned successfully!"}
 
+
 @router.post('/appointments/new_appointment', status_code=status.HTTP_201_CREATED)
-def create_appointment(patient_id: int, apt_payload: schemas.AppointmentCreate, db: Session = Depends(get_db)):
+async def create_appointment(patient_id: int, apt_payload: schemas.AppointmentCreate, db: Session = Depends(get_db)):
 
     patient = pat_crud.get_patient_by_id(patient_id, db)
     if not patient:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
     
+    # Ensure scheduled_time is in the future
+    if apt_payload.scheduled_time < datetime.now():
+        raise HTTPException(
+            status_code=400, detail="Appointment date cannot be in the past.")
+
+
+    # Check if time slot is available
+    time_is_taken = apt_crud.get_hospital_appointment_by_schedule_time(
+        apt_payload.hospital_id, apt_payload.scheduled_time, db)
+    if time_is_taken:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Time slot is already taken")
+
     # Check if the patient is already scheduled for an appointment
-    existing_appointment = apt_crud.get_patient_pending_appointments(patient_id, db)
+    existing_appointment = apt_crud.get_patient_pending_appointments(
+        patient_id, db)
     if existing_appointment:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Patient already has a pending appointment")
-    
-    #check if the hospital exists
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                            detail="Patient already has a pending appointment")
+
+    # Check if the hospital exists
     hospital = hp_crud.get_hospital_id(apt_payload.hospital_id, db)
     if not hospital:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Hospital not found")
-    
-    # Create the appointment
-    apt_crud.create_appointment(patient_id, apt_payload, db)
-    
-    return {"message": "appointment created successfully!"}
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Hospital not found")
+
+    # Create the appointment (await the async function)
+    await apt_crud.create_appointment(patient_id, apt_payload, db)
+
+    return {"message": "Appointment created successfully!"}
+
 
 @router.get('/appointments', status_code=status.HTTP_200_OK, response_model=List[schemas.Appointment])
 def get_appointments(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
@@ -94,6 +114,16 @@ def get_patient_appointments(patient_id: int, skip: int = 0, limit: int = 10, db
     #     )
     
     appointments = apt_crud.get_patient_appointments(patient_id, skip, limit, db)
+    return appointments
+
+@router.get('/appointments/hospital/{hospital_id}', status_code=status.HTTP_200_OK, response_model=List[schemas.Appointment])
+def get_hospital_appointment(hospital_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    
+    hospital = hp_crud.get_hospital_id(hospital_id, db)
+    if not hospital:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Hospital not found")
+    
+    appointments = apt_crud.get_appointment_by_hospital_id(hospital_id, skip, limit, db)
     return appointments
 
 @router.get('/appointments/uncompleted', status_code=status.HTTP_200_OK, response_model=List[schemas.Appointment])
@@ -125,7 +155,7 @@ def get_appointment_by_id(appointment_id: int, db: Session = Depends(get_db)):
 
 
 @router.delete('/appointments/{appointment_id}/cancel', status_code=status.HTTP_202_ACCEPTED)
-def cancel_appointment(appointment_id: int, db: Session = Depends(get_db)):
+async def cancel_appointment(appointment_id: int, db: Session = Depends(get_db)):
 
     appointment = apt_crud.get_appointment_by_id(appointment_id, db)
 
@@ -136,7 +166,7 @@ def cancel_appointment(appointment_id: int, db: Session = Depends(get_db)):
     if appointment.status == schemas.AppointmentStatus.CANCELED:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Appointment is already canceled")
     
-    apt_crud.cancel_appointment(appointment_id, db)
+    await apt_crud.cancel_appointment(appointment_id, db)
     db.commit()
 
     doctor = doc_crud.get_doctor(db=db, doctor_id=appointment.doctor_id)
@@ -149,27 +179,27 @@ def cancel_appointment(appointment_id: int, db: Session = Depends(get_db)):
 
 #set appointment status
 @router.put('/appointments/{appointment_id}/appointment_status', status_code=status.HTTP_202_ACCEPTED)
-def update_appointment_status(appointment_id: int, new_status: schemas.AppointmentStatusUpdate, db: Session = Depends(get_db)):
+async def update_appointment_status(appointment_id: int, new_status: schemas.AppointmentStatusUpdate, db: Session = Depends(get_db)):
 
     appointment = apt_crud.get_appointment_by_id(appointment_id, db)
     if not appointment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
     
     
-    apt_crud.switch_appointment_status(appointment_id, new_status, db)
+    await apt_crud.switch_appointment_status(appointment_id, new_status, db)
     db.commit()
 
     return {"message": f"Appointment status has been updated to {new_status.status}"}
 
 @router.delete('/appointments/{appointment_id}/delete', status_code=status.HTTP_202_ACCEPTED)
-def delete_db_appointment(appointment_id: int, db: Session = Depends(get_db)):
+async def delete_db_appointment(appointment_id: int, db: Session = Depends(get_db)):
 
     appointment = apt_crud.get_appointment_by_id(appointment_id, db)
 
     if not appointment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
     
-    apt_crud.delete_appointment(appointment_id, db)
+    await apt_crud.delete_appointment(appointment_id, db)
     db.commit()
 
     return {"message": "Appointment has been deleted successfully!"}

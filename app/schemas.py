@@ -363,3 +363,11 @@ class PasswordResetConfirm(BaseModel):
     new_password: str
     confirm_password: str
 
+# Schema for websocket
+
+
+class AppointmentQueueOut(BaseModel):
+    id: int
+    patient: dict
+    time: str
+    status: str
