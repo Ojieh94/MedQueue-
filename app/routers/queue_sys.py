@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Appointment
 from sqlalchemy import asc
+from datetime import datetime
+from app.utils import remaining_time
 
 router = APIRouter(
     tags=['Appointment Queue']
@@ -57,7 +59,8 @@ async def notify_queue_update(db: Session):
         "id": appt.id,
         "patient": appt.patient_id,
         "time": appt.scheduled_time.isoformat(),
-        "status": appt.status.value
+        "status": appt.status.value,
+        "appointment_due": remaining_time(appt.scheduled_time)
     } for appt in queue]
 
     await manager.broadcast({"type": "queue_update", "data": queue_data})
@@ -70,9 +73,10 @@ async def send_initial_queue(websocket: WebSocket, db: Session):
 
     queue_data = [{
         "id": appt.id,
-        "patient": appt.patient.user.first_name + " " + appt.patient.user.last_name,
         "time": appt.scheduled_time.isoformat(),
-        "status": appt.status.value
+        "status": appt.status.value,
+        "appointment_due": remaining_time(appt.scheduled_time)
     } for appt in queue]
+    
 
     await websocket.send_json({"type": "queue_update", "data": queue_data})

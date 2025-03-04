@@ -60,5 +60,10 @@ def validate_signup_token(token: str, db: Session) -> bool:
         return False
     return True
 
-
+def remaining_time(created_at: datetime) -> str:
+    time_diff = created_at - datetime.now()
+    days, remainder = divmod(time_diff.days, 86400)
+    hours, remainder = divmod(time_diff.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{days} days, {hours} hours, {minutes} minutes, {seconds} seconds"
 
