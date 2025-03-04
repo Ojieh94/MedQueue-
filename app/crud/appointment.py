@@ -22,7 +22,8 @@ async def create_appointment(patient_id: int, payload: schemas.AppointmentCreate
     db.commit()
     db.refresh(appointment)
 
-    await notify_queue_update(db)
+    await notify_queue_update(hospital_id=appointment.hospital_id, db=db)
+
 
     return appointment 
 
@@ -57,7 +58,8 @@ async def cancel_appointment(appointment_id: int, db: Session):
     db.commit()
     db.refresh(appointment)
 
-    await notify_queue_update(db)
+    await notify_queue_update(hospital_id=appointment.hospital_id, db=db)
+
 
     return appointment
 
@@ -79,7 +81,8 @@ async def switch_appointment_status(appointment_id: int, new_status: schemas.App
     db.commit()
     db.refresh(appointment)
 
-    await notify_queue_update(db)
+    await notify_queue_update(hospital_id=appointment.hospital_id, db=db)
+
 
     return appointment
 
@@ -93,5 +96,6 @@ async def delete_appointment(appointment_id: int, db: Session):
     db.delete(appointment)
     db.commit()
 
-    await notify_queue_update(db)
+    await notify_queue_update(hospital_id=appointment.hospital_id, db=db)
+
     return True
