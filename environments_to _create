@@ -1,7 +1,0 @@
-#extra environments to add
-# REDIS_URL="redis://:localpassword@redis:6379/0" # local testing
-REDIS_URL = "redis://default:mSXCHROPldRfmLg5IBkiwlxnjp37eBiU@redis-15881.c253.us-central1-1.gce.redns.redis-cloud.com:15881" 
-SMTP_USER= "queuemedix@gmail.com"
-SMTP_PASSWORD="itlwpofmueczowdd"
-SMTP_SERVER="smtp.gmail.com"
-SMTP_PORT=587
