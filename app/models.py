@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Enum, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from datetime import datetime
 from app.schemas import AdminType, OwnershipType, UserRole, AppointmentStatus
 from app.database import Base
 
@@ -181,3 +182,14 @@ class PasswordResetToken(Base):
     is_used = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
 
+class Message(Base):
+    __tablename__ = "messages"
+
+    id = Column(Integer, primary_key=True, index=True)
+    sender_id = Column(Integer, ForeignKey("users.id"))
+    receiver_id = Column(Integer, ForeignKey("users.id"))
+    message_text = Column(String, nullable=False)
+    timestamp = Column(DateTime, default=datetime.now())
+
+    sender = relationship("User", foreign_keys=[sender_id])
+    receiver = relationship("User", foreign_keys=[receiver_id])

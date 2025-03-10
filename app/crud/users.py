@@ -35,11 +35,11 @@ def delete_user(db: Session, user_id: int):
 def confirm_emails(email: str, db: Session):
     user_email = get_user_by_email(db=db, email=email)
     hospital_email = get_hospital_by_email(db=db, email=email)
-
+    
     if user_email:
-        return user_email.email
+        return user_email
     elif hospital_email:
-        return hospital_email.email
+        return hospital_email
     else:
         return None
 

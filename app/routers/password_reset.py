@@ -6,6 +6,7 @@ from app.crud.users import confirm_emails
 from app.database import get_db
 from app.crud.password_reset import create_password_reset_token, update_password
 from app.models import PasswordResetToken
+from app import email_utils
 
 
 router = APIRouter(
@@ -20,7 +21,12 @@ def generate_password_reset_token(payload: PasswordReset, db:Session=Depends(get
 
     token = create_password_reset_token(payload.email, db)
 
-    return {"password_reset_token": token}
+    # Send the token via email instead of returning it
+    email_sent = email_utils.send_password_reset_email(payload.email, user.first_name, token)
+    if not email_sent:
+        raise HTTPException(status_code=500, detail="Failed to send password reset email")
+
+    return {"message": "Password reset email sent successfully!"}
 
 @router.put('/password_reset', status_code=status.HTTP_202_ACCEPTED)
 def password_reset(token: str, payload: PasswordResetConfirm, db: Session = Depends(get_db)):
