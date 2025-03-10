@@ -184,7 +184,7 @@ class AdminBase(BaseModel):
     country: str = ""
     state_of_residence: str = ""
     home_address: str = ""
-    hospital_id: Optional[int]
+    hospital_id: Optional[int] = None
     hospital_admin_id: str = ""
     admin_type: AdminType = AdminType.HOSPITAL_ADMIN
 
