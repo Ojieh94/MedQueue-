@@ -21,6 +21,7 @@ def send_password_reset_email(to_email: str, first_name: str, token: str):
     <html>
     <body>
         <p>Hello {first_name},</p>  <!-- 🔹 Inserts first name -->
+        <p>Use this {token} to reset your password.</p>  <!-- 🔹 Inserts token -->
         <p>You requested a password reset. Click the link below to reset your password:</p>
         <br>
         <a href="{reset_link}" style="background-color:#008CBA;color:white;padding:10px 15px;text-decoration:none;border-radius:5px;">Reset Password</a>
