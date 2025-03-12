@@ -15,7 +15,7 @@ SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
 
 def send_password_reset_email(to_email: str, first_name: str, token: str):
     subject = "Password Reset Request"
-    reset_link = f"https://www.queuemedix.com/password_reset?token={token}"
+    reset_link = f"https://www.queuemedix.com/forgot-password?token={token}"
 
     body = f"""
     <html>
