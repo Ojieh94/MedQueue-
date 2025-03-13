@@ -1,3 +1,4 @@
+import string
 from fastapi import HTTPException
 from app import schemas
 from app.crud.hospitals import get_hospital_by_email
@@ -60,12 +61,20 @@ def update_password(payload: schemas.PasswordResetConfirm, db: Session):
         return hospital
    
 
+def generate_otp(length: int = 6) -> str:
+    characters = string.digits  # Digits-only OTP
+    return ''.join(secrets.choice(characters) for _ in range(length))
+
 def create_password_reset_token(email: str, db: Session) -> str:    
-    token = secrets.token_urlsafe(32)
-    reset_token = PasswordResetToken(token=token, email=email, expires_at=datetime.now() + timedelta(hours=24))
+    otp = generate_otp()
+    reset_token = PasswordResetToken(
+        token=otp,
+        email=email,
+        expires_at=datetime.now() + timedelta(minutes=5)  # Expires in 5 minutes
+    )
     db.add(reset_token)
     db.commit()
-    return token
+    return otp
 
 #background task for periodic cleanup
 def delete_expired_tokens(db: Session):

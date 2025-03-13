@@ -13,28 +13,8 @@ SMTP_SERVER = os.getenv("SMTP_SERVER")
 SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
 
 
-def send_password_reset_email(to_email: str, first_name: str, token: str):
-    subject = "Password Reset Request"
-    reset_link = f"https://www.queuemedix.com/forgot-password?token={token}"
-
-    body = f"""
-    <html>
-    <body>
-        <p>Hello {first_name},</p>  <!-- 🔹 Inserts first name -->
-        <p>Use this {token} to reset your password.</p>  <!-- 🔹 Inserts token -->
-        <p>You requested a password reset. Click the link below to reset your password:</p>
-        <br>
-        <a href="{reset_link}" style="background-color:#008CBA;color:white;padding:10px 15px;text-decoration:none;border-radius:5px;">Reset Password</a>
-        <br>
-        <br>
-        <p>If you did not request this, please ignore this email.</p>
-        <p>Thank you,</p>
-        <br>
-        <p>QueueMedix Team</p>
-    </body>
-    </html>
-    """
-
+def send_email(to_email: str, subject: str, body: str) -> bool:
+    """Generic function to send emails via SMTP"""
     msg = MIMEMultipart()
     msg["From"] = SMTP_USER
     msg["To"] = to_email
@@ -47,8 +27,56 @@ def send_password_reset_email(to_email: str, first_name: str, token: str):
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.sendmail(SMTP_USER, to_email, msg.as_string())
 
-        print("Password reset email sent successfully!")
+        print(f"Email sent successfully: {subject}")
         return True
     except Exception as e:
-        print("Failed to send email:", e)
+        print(f"Failed to send email: {subject}. Error: {e}")
         return False
+
+def send_password_reset_email(to_email: str, name: str, token: str):
+    subject = "Password Reset"
+    # reset_link = f"https://www.queuemedix.com/forgot-password?token={token}"
+
+    body = f"""
+    <html>
+    <body>
+        <p>Hello {name},</p>  <!-- 🔹 Inserts first name or hospital's name -->
+        <p><b>Reset your password</b></p> 
+        <p>We received a request to reset the password to your QueueMedix account.</p>
+        <br>
+        <p>Your OTP code: {token}</p>
+        <p>Please note your OTP code will expire after 5 minutes.</p> 
+        <p>If you didn't initiate this request, please send us an email to <a href= "mailto:queuemedix@gmail.com">queuemedix@gmail.com</a> so we can immediately look into this.</p>
+        <br>
+        <p>Best regards,</p>
+        
+        <p>Team QueueMedix</p>
+    </body>
+    </html>
+    """
+    return send_email(to_email, subject, body)
+    
+
+def send_successful_reset_email(to_email: str, name: str):
+    subject = "Password Reset Successful"
+    login_link = f"https://www.queuemedix.com/signin"
+
+    body = f"""
+    <html>
+    <body>
+        <p>Hello {name},</p>  <!-- 🔹 Inserts first name or hospital's name -->
+        <p><b>Password Reset Successful</b></p> 
+        <p>Your QueueMedix account password has been successfuly reset. Please click on the link below to login.</p>
+        <br>
+        <a href="{login_link}" style="background-color:blue;color:white;padding:10px 15px;text-decoration:none;border-radius:5px;">Login to your account</a>
+        <br>
+        <br>
+        <p>If you didn't initiate this request, please send us an email to <a href= "mailto:queuemedix@gmail.com">queuemedix@gmail.com</a> so we can immediately look into this.</p>
+        <br>
+        <p>Best regards,</p>
+        
+        <p>Team QueueMedix</p>
+    </body>
+    </html>
+    """
+    return send_email(to_email, subject, body)

@@ -18,15 +18,18 @@ def generate_password_reset_token(payload: PasswordReset, db:Session=Depends(get
     user = confirm_emails(payload.email, db)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+    
+    get_name = user.first_name if user.first_name else user.name 
 
     token = create_password_reset_token(payload.email, db)
 
     # Send the token via email instead of returning it
-    email_sent = email_utils.send_password_reset_email(payload.email, user.first_name, token)
+    email_sent = email_utils.send_password_reset_email(payload.email, get_name, token)
     if not email_sent:
         raise HTTPException(status_code=500, detail="Failed to send password reset email")
 
     return {"message": "Password reset email sent successfully!"}
+
 
 @router.put('/password_reset', status_code=status.HTTP_202_ACCEPTED)
 def password_reset(token: str, payload: PasswordResetConfirm, db: Session = Depends(get_db)):
@@ -57,5 +60,10 @@ def password_reset(token: str, payload: PasswordResetConfirm, db: Session = Depe
     # Mark the token as used
     confirm_token.is_used = True
     db.commit()
+
+    get_name = user.first_name if user.first_name else user.name
+    email_sent = email_utils.send_successful_reset_email(payload.email, get_name)
+    if not email_sent:
+        raise HTTPException(status_code=500, detail="Failed to send email")
     
-    return {"message": "Password updated successfully"}
+    return {"message": "Password reset successful"}
