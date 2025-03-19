@@ -290,7 +290,7 @@ class PatientOut(PatientBase):
 class AppointmentCreate(BaseModel):
     appointment_note: str
     hospital_id: int
-    scheduled_time: datetime = datetime.now()
+    scheduled_time: datetime = Field(default_factory=datetime.now) 
 
 
 class AppointmentStatusUpdate(BaseModel):
