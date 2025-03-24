@@ -59,7 +59,7 @@ async def create_appointment(patient_id: int, apt_payload: schemas.AppointmentCr
             status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
     
     # Ensure scheduled_time is in the future
-    if apt_payload.scheduled_time < datetime.now():
+    if apt_payload.scheduled_time < datetime.now(timezone.utc): 
         raise HTTPException(
             status_code=400, detail="Appointment date cannot be in the past.")
 
