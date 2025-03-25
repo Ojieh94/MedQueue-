@@ -240,6 +240,7 @@ class MedicalRecord(MedicalRecordBase):
 
 
 class PatientBase(BaseModel):
+    id: int
     phone_number: str = "Phone Number"
     date_of_birth: datetime = datetime.now()
     gender: str = "Gender"
