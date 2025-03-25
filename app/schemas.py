@@ -240,7 +240,6 @@ class MedicalRecord(MedicalRecordBase):
 
 
 class PatientBase(BaseModel):
-    id: int
     phone_number: str = "Phone Number"
     date_of_birth: datetime = datetime.now()
     gender: str = "Gender"
@@ -302,7 +301,7 @@ class Appointment(BaseModel):
     id: int
     appointment_note: str
     scheduled_time: datetime
-    patient: PatientOut
+    patient: PatientResponse
     hospital: Hospital
     doctor: DoctorOut | None
     status: AppointmentStatus = AppointmentStatus.PENDING
