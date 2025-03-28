@@ -24,7 +24,7 @@ def get_all_patients(skip: int = 0, limit: int = 10, search: Optional[str] = "",
     return patients
 
 @router.get('/patients/{patient_id}', status_code=status.HTTP_200_OK, response_model=schemas.PatientResponse)
-def get_single_patient(patient_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+def get_single_patient(patient_id: int, db: Session = Depends(get_db)):#, current_user: models.User = Depends(get_current_user)):
 
     patient = patient_crud.get_patient_by_id(patient_id, db)
     
@@ -32,13 +32,14 @@ def get_single_patient(patient_id: int, db: Session = Depends(get_db), current_u
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
     
     #authorize the user
-    allowed_admins = {schemas.UserRole.ADMIN, schemas.UserRole.DOCTOR}
+    ######## To be uncommented later
+    # allowed_admins = {schemas.UserRole.ADMIN, schemas.UserRole.DOCTOR}
 
-    # Check if current user is an admin(endpoint is only accessible to super admins and hospital admins)
-    if current_user.role not in allowed_admins and current_user.id != patient.user_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized! Aborting..."
-        )
+    # # Check if current user is an admin(endpoint is only accessible to super admins and hospital admins)
+    # if current_user.role not in allowed_admins and current_user.id != patient.user_id:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized! Aborting..."
+    #     )
     
     return patient
 
