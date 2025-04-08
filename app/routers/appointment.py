@@ -126,6 +126,19 @@ def get_hospital_appointment(hospital_id: int, skip: int = 0, limit: int = 10, d
     appointments = apt_crud.get_appointment_by_hospital_id(hospital_id, skip, limit, db)
     return appointments
 
+
+@router.get('/appointments/doctor/{doctor_id}', status_code=status.HTTP_200_OK, response_model=List[schemas.Appointment])
+def get_doctor_appointment(doctor_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+
+    doctor = doc_crud.get_doctor(db=db, doctor_id=doctor_id)
+    if not doctor:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Doctor not found")
+
+    appointments = apt_crud.get_appointment_by_doctor_id(
+        doctor_id, skip, limit, db)
+    return appointments
+
 @router.get('/appointments/uncompleted', status_code=status.HTTP_200_OK, response_model=List[schemas.Appointment])
 def get_uncompleted_appointments(db: Session = Depends(get_db)):
 

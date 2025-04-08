@@ -39,8 +39,13 @@ def get_patient_appointments(patient_id: int, skip: int, limit: int, db: Session
 def get_appointment_by_id(appointment_id: int, db: Session) -> models.Appointment:
     return db.query(models.Appointment).filter(models.Appointment.id == appointment_id).first()
 
-def get_appointment_by_hospital_id(skip: int, limit: int, db: Session) -> List[models.Appointment]:
-    return db.query(models.Appointment).order_by(models.Appointment.scheduled_time).offset(skip).limit(limit).all()
+
+def get_appointment_by_hospital_id(hospital_id: int, skip: int, limit: int, db: Session) -> List[models.Appointment]:
+    return db.query(models.Appointment).filter(models.Appointment.hospital_id == hospital_id).order_by(models.Appointment.scheduled_time).offset(skip).limit(limit).all()
+
+
+def get_appointment_by_doctor_id(doctor_id: int, skip: int, limit: int, db: Session) -> List[models.Appointment]:
+    return db.query(models.Appointment).filter(models.Appointment.doctor_id == doctor_id).order_by(models.Appointment.scheduled_time).offset(skip).limit(limit).all()
 
 def get_hospital_appointment_by_schedule_time(hospital_id: int, scheduled_time: str, db: Session) -> models.Appointment:
     return db.query(models.Appointment).filter(models.Appointment.hospital_id == hospital_id, models.Appointment.scheduled_time == scheduled_time).first()
