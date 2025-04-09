@@ -379,18 +379,18 @@ class UserDoctorOut(BaseModel):
     id: int
     email: EmailStr
     role: UserRole
-    doctor_detials: DoctorResponse
+    doctor_detials: Doctor
 
 
 class UserPatientOut(BaseModel):
     id: int
     email: EmailStr
     role: UserRole
-    doctor_detials: PatientResponse
+    patient_detials: Patient
 
 
 class UserAdminOut(BaseModel):
     id: int
     email: EmailStr
     role: UserRole
-    doctor_detials: AdminResponse
+    admin_detials: Admin

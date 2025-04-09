@@ -57,7 +57,7 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db), current_user: sc
             id=user.id,
             email=user.email,
             role=user.role,
-            doctor_details=schemas.DoctorResponse.model_validate(doctor)
+            doctor_details=schemas.Doctor.model_validate(doctor)
         )
 
     elif user.role == schemas.UserRole.PATIENT:
@@ -66,7 +66,7 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db), current_user: sc
             id=user.id,
             email=user.email,
             role=user.role,
-            patient_details=schemas.PatientResponse.model_validate(patient)
+            patient_details=schemas.Patient.model_validate(patient)
         )
 
     elif user.role == schemas.UserRole.ADMIN:
@@ -75,7 +75,7 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db), current_user: sc
             id=user.id,
             email=user.email,
             role=user.role,
-            admin_details=schemas.AdminResponse.model_validate(admin)
+            admin_details=schemas.Admin.model_validate(admin)
         )
 
     raise HTTPException(status_code=400, detail="Invalid user role")
