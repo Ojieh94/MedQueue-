@@ -1,7 +1,10 @@
 from enum import Enum
+from operator import is_
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from datetime import datetime
 from typing import List, Optional
+
+from app import email_utils
 
 # Custom EmailStr to ensure case insensitivity
 
@@ -377,20 +380,37 @@ class AppointmentQueueOut(BaseModel):
 
 class UserDoctorOut(BaseModel):
     id: int
+    doctor_id: int
     email: EmailStr
     role: UserRole
-    doctor_detials: Doctor
+    first_name: str
+    last_name: str
+    specialization: str
+    hospital_id: int
+    is_active: bool
+    created_at: datetime
+   
 
 
 class UserPatientOut(BaseModel):
     id: int
+    patient_id: int
     email: EmailStr
     role: UserRole
-    patient_detials: Patient
+    first_name: str
+    last_name: str
+    is_active: bool
+    created_at: datetime
 
 
 class UserAdminOut(BaseModel):
     id: int
+    admin_id: int
     email: EmailStr
     role: UserRole
-    admin_detials: Admin
+    first_name: str
+    last_name: str
+    admin_type: AdminType
+    hospital_id: int
+    is_active: bool
+    created_at: datetime

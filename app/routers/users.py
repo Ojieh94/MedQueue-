@@ -55,27 +55,43 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db), current_user: sc
         doctor = doc_crud.get_doctor_by_user_id(db=db, user_id=user.id)
         return schemas.UserDoctorOut(
             id=user.id,
+            doctor_id=doctor.id,
             email=user.email,
             role=user.role,
-            doctor_details=schemas.Doctor.model_validate(doctor)
+            first_name=user.first_name,
+            last_name=user.last_name,
+            specialization=doctor.specialization,
+            hospital_id=doctor.hospital_id,
+            is_active=user.is_active,
+            created_at=user.created_at        
         )
 
     elif user.role == schemas.UserRole.PATIENT:
         patient = pat_crud.get_patient_by_user_id(db=db, user_id=user.id)
         return schemas.UserPatientOut(
             id=user.id,
+            patient_id=patient.id,
             email=user.email,
             role=user.role,
-            patient_details=schemas.Patient.model_validate(patient)
+            first_name=user.first_name,
+            last_name = user.last_name,
+            is_active=user.is_active,
+            created_at=user.created_at
         )
 
     elif user.role == schemas.UserRole.ADMIN:
         admin = admin_crud.get_admin_by_user_id(db=db, user_id=user.id)
         return schemas.UserAdminOut(
             id=user.id,
+            admin_id=admin.id,
             email=user.email,
             role=user.role,
-            admin_details=schemas.Admin.model_validate(admin)
+            first_name=user.first_name,
+            last_name=user.last_name,   
+            admin_type=admin.admin_type,
+            hospital_id=admin.hospital_id,
+            is_active=user.is_active,
+            created_at=user.created_at
         )
 
     raise HTTPException(status_code=400, detail="Invalid user role")
