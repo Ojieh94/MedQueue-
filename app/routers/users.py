@@ -4,7 +4,7 @@ from app.crud import admins as admin_crud
 from app.oauth2 import get_current_user
 from sqlalchemy.orm import Session
 import app.schemas as schemas
-from app.crud import users as user_crud
+from app.crud import users as user_crud, doctors as doc_crud, patients as pat_crud
 from app.database import get_db
 
 router = APIRouter(
@@ -49,6 +49,17 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db), current_user: sc
     # if admin_user.admin_type != schemas.AdminType.SUPER_ADMIN:
     #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
     #                         detail="Accessible to only super admins")
+
+    if user.role == schemas.UserRole.DOCTOR:
+        user = doc_crud.get_doctor_by_user_id(
+            db=db, user_id=user.id)
+    elif user.role == schemas.UserRole.PATIENT:
+        user = pat_crud.get_patient_by_user_id(
+            db=db, user_id=user.id)
+    elif user.role == schemas.UserRole.ADMIN:
+            user = admin_crud.get_admin_by_user_id(
+                db=db, user_id=user.id)
+        
     return user
 
 
