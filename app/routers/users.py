@@ -31,7 +31,7 @@ def get_all_users(db: Session = Depends(get_db), current_user: schemas.User = De
     return users
 
 
-@router.get('/user/{user_id}', status_code=200, response_model=schemas.User)
+@router.get('/user/{user_id}', status_code=200)
 def get_user_by_id(user_id: int, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
     user = user_crud.get_user(db=db, user_id=user_id)
     if not user:
