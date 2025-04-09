@@ -7,6 +7,7 @@ import app.schemas as schemas
 from app.crud import users as user_crud, doctors as doc_crud, patients as pat_crud
 from app.database import get_db
 
+
 router = APIRouter(
     tags=['User']
 )
@@ -51,16 +52,34 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db), current_user: sc
     #                         detail="Accessible to only super admins")
 
     if user.role == schemas.UserRole.DOCTOR:
-        user = doc_crud.get_doctor_by_user_id(
-            db=db, user_id=user.id)
+        doctor = doc_crud.get_doctor_by_user_id(db=db, user_id=user.id)
+        return schemas.UserDoctorOut(
+            id=user.id,
+            email=user.email,
+            role=user.role,
+            doctor_details=schemas.DoctorResponse.model_validate(doctor)
+        )
+
     elif user.role == schemas.UserRole.PATIENT:
-        user = pat_crud.get_patient_by_user_id(
-            db=db, user_id=user.id)
+        patient = pat_crud.get_patient_by_user_id(db=db, user_id=user.id)
+        return schemas.UserPatientOut(
+            id=user.id,
+            email=user.email,
+            role=user.role,
+            patient_details=schemas.PatientResponse.model_validate(patient)
+        )
+
     elif user.role == schemas.UserRole.ADMIN:
-            user = admin_crud.get_admin_by_user_id(
-                db=db, user_id=user.id)
+        admin = admin_crud.get_admin_by_user_id(db=db, user_id=user.id)
+        return schemas.UserAdminOut(
+            id=user.id,
+            email=user.email,
+            role=user.role,
+            admin_details=schemas.AdminResponse.model_validate(admin)
+        )
+
+    raise HTTPException(status_code=400, detail="Invalid user role")
         
-    return user
 
 
 @router.get('/user/email/{email}', status_code=200, response_model=schemas.UserBase)

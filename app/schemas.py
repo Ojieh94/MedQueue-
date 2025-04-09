@@ -14,7 +14,6 @@ class CaseInsensitiveEmailStr(EmailStr):
 
 # Enum for User Roles
 
-
 class UserRole(str, Enum):
     ADMIN = "admin"
     DOCTOR = "doctor"
@@ -80,6 +79,7 @@ class User(UserBase):
 
 class UserOut(UserBase):
     model_config = ConfigDict(from_attributes=True)
+
 
 # Base Model for Hospital
 
@@ -371,3 +371,26 @@ class AppointmentQueueOut(BaseModel):
     patient: dict
     time: str
     status: str
+
+
+# Schema for user outputs
+
+class UserDoctorOut(BaseModel):
+    id: int
+    email: EmailStr
+    role: UserRole
+    doctor_detials: DoctorResponse
+
+
+class UserPatientOut(BaseModel):
+    id: int
+    email: EmailStr
+    role: UserRole
+    doctor_detials: PatientResponse
+
+
+class UserAdminOut(BaseModel):
+    id: int
+    email: EmailStr
+    role: UserRole
+    doctor_detials: AdminResponse
