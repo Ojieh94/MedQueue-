@@ -12,7 +12,7 @@ delete patient
 
 
 def get_patient_by_user_id(db: Session, user_id: int) -> models.Patient:
-    return db.query(models.Patient).join(models.User).filter(models.Patient.user_id == user_id)
+    return db.query(models.Patient).join(models.User).filter(models.Patient.user_id == user_id).first()
 
 def get_patient_by_email(db: Session, email: str):
     return db.query(models.Patient).join(models.User, models.Patient.user_id == models.User.id).filter(models.User.email == email).first()
