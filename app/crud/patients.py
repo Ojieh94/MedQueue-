@@ -28,7 +28,7 @@ def get_patients(skip: int, limit: int, search: Optional[str], db: Session) -> L
     return query.offset(skip).limit(limit).all()
 
 
-def get_patient_by_id(patient_id: int, db: Session) -> Optional[models.Patient]:
+def get_patient_by_id(patient_id: int, db: Session) -> models.Patient:
     return db.query(models.Patient).filter(models.Patient.id == patient_id).first()
 
 def get_patient_by_card_id(hospital_card_id: str, db: Session) -> models.Patient:
