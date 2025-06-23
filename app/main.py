@@ -60,10 +60,16 @@ async def lifespan(app: FastAPI):
 # Initialize the FastAPI application
 app = FastAPI(lifespan=lifespan)
 
+# Add origins
+origins = [
+    "http://localhost:3000",
+    "https://queue-medix.vercel.app",
+]
+
 # CORS Middleware setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows requests from any origin
+    allow_origins=origins,
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=True,
