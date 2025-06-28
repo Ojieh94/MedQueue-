@@ -62,7 +62,7 @@ app = FastAPI(lifespan=lifespan)
 
 # Add origins
 origins = [
-    "http://localhost:3000",
+    "http://localhost",
     "https://queue-medix.vercel.app",
 ]
 
