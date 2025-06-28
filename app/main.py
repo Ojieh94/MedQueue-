@@ -64,6 +64,7 @@ app = FastAPI(lifespan=lifespan)
 origins = [
     "http://localhost",
     "https://queue-medix.vercel.app",
+    "https://www.queuemedix.com",
 ]
 
 # CORS Middleware setup
