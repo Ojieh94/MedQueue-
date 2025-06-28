@@ -65,6 +65,7 @@ origins = [
     "http://localhost",
     "https://queue-medix.vercel.app",
     "https://www.queuemedix.com",
+    "https://queuemedix.com",
 ]
 
 # CORS Middleware setup
