@@ -1,3 +1,4 @@
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from typing import List
 from app import models, schemas
@@ -72,9 +73,17 @@ def get_pending_appointments(db: Session) -> List[models.Appointment]:
     query = db.query(models.Appointment).filter(models.Appointment.status == schemas.AppointmentStatus.PENDING).order_by(models.Appointment.scheduled_time)
     return query.all()
 
+
 def get_patient_pending_appointments(patient_id: int, db: Session) -> models.Appointment:
-    query = db.query(models.Appointment).filter(models.Appointment.patient_id == patient_id, models.Appointment.status != schemas.AppointmentStatus.COMPLETED)
+    query = db.query(models.Appointment).filter(
+        and_(
+            models.Appointment.patient_id == patient_id,
+            models.Appointment.status != schemas.AppointmentStatus.COMPLETED,
+            models.Appointment.status != schemas.AppointmentStatus.CANCELED
+        )
+    )
     return query.first()
+
 
 async def switch_appointment_status(appointment_id: int, new_status: schemas.AppointmentStatusUpdate, db: Session) -> models.Appointment:
     appointment = get_appointment_by_id(appointment_id, db)
