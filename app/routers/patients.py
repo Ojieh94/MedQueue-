@@ -107,7 +107,7 @@ def delete_patient(patient_id: int, db: Session = Depends(get_db), current_user:
     return{"message": "Patient deleted successfully!"}
 
 
-@router.delete('/patients/{patient_id}', status_code=status.HTTP_202_ACCEPTED)
+@router.delete('/patients/backend/{patient_id}', status_code=status.HTTP_202_ACCEPTED)
 def delete_patient(patient_id: int, db: Session = Depends(get_db)):
     patient = patient_crud.get_patient_by_id(patient_id, db)
     if not patient:
