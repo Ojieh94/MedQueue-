@@ -72,6 +72,7 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=r"http://localhost:\d+",  # covers localhost with any port
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=True,
